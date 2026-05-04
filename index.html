@@ -1507,173 +1507,247 @@
     </div>
   </div>
 
-  <script>
-    var SHEET_URL = 'https://script.google.com/macros/s/AKfycbxe38y13rKbiynMmGsy0zpwoxLclgVQP2Rqz5tIbnGaqtsIVHK-Ir1SK3Yq2fkPEN2rzA/exec';
+ <script>
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbxe38y13rKbiynMmGsy0zpwoxLclgVQP2Rqz5tIbnGaqtsIVHK-Ir1SK3Yq2fkPEN2rzA/exec';
 
-    function selectOrg(id, isInd) {
-      document.querySelectorAll('.oc').forEach(function (o) { o.classList.remove('sel'); });
-      document.getElementById(id).classList.add('sel');
-      document.getElementById('ind-sub').classList.remove('show');
-      document.getElementById('proc-btn').classList.remove('show');
-      document.querySelectorAll('input[name=indt]').forEach(function (r) { r.checked = false; });
-      document.getElementById('ws-area').style.display = 'none';
-      if (isInd) {
-        document.getElementById('ind-sub').classList.add('show');
-      } else {
-        openWS();
-      }
+  /* =========================
+     ORGANIZATION SELECTION
+  ========================= */
+  function selectOrg(id, isInd) {
+    document.querySelectorAll('.oc').forEach(o => o.classList.remove('sel'));
+    document.getElementById(id).classList.add('sel');
+
+    document.getElementById('ind-sub').classList.remove('show');
+    document.getElementById('proc-btn').classList.remove('show');
+    document.querySelectorAll('input[name=indt]').forEach(r => r.checked = false);
+
+    document.getElementById('ws-area').style.display = 'none';
+
+    if (isInd) {
+      document.getElementById('ind-sub').classList.add('show');
+    } else {
+      openWS();
+    }
+  }
+
+  function showProceed() {
+    document.getElementById('proc-btn').classList.add('show');
+  }
+
+  function openWS() {
+    const area = document.getElementById('ws-area');
+    area.style.display = 'block';
+
+    const orgEl = document.querySelector('.oc.sel .oname');
+    const indEl = document.querySelector('input[name=indt]:checked');
+
+    let msg = orgEl ? orgEl.textContent : '—';
+    if (indEl) msg += ' (' + indEl.parentElement.textContent.trim() + ')';
+
+    document.getElementById('banner-org').textContent = msg;
+    area.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function jumpTo(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  /* =========================
+     ROW HANDLING
+  ========================= */
+  function addPanel(cid, cls, cols, max, infoId, warnId) {
+    const c = document.getElementById(cid);
+    const cur = c.querySelectorAll('.prow').length;
+
+    if (cur >= max) {
+      document.getElementById(warnId).style.display = 'block';
+      return;
     }
 
-    function showProceed() {
-      document.getElementById('proc-btn').classList.add('show');
+    const row = document.createElement('div');
+    row.className = 'prow ' + cls;
+
+    let html = '';
+    for (let i = 0; i < cols; i++) {
+      html += '<input type="text" placeholder="N/A">';
     }
 
-    function openWS() {
-      var area = document.getElementById('ws-area');
-      area.style.display = 'block';
-      var orgEl = document.querySelector('.oc.sel .oname');
-      var indEl = document.querySelector('input[name=indt]:checked');
-      var msg = orgEl ? orgEl.textContent : '—';
-      if (indEl) { msg += ' (' + indEl.parentElement.textContent.trim() + ')'; }
-      document.getElementById('banner-org').textContent = msg;
-      area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    row.innerHTML = html;
+    c.appendChild(row);
+
+    const nc = cur + 1;
+    document.getElementById(infoId).textContent = nc + ' / ' + max + ' rows';
+  }
+
+  function addTbl(bodyId, max, infoId, warnId) {
+    const body = document.getElementById(bodyId);
+    const cur = body.querySelectorAll('tr').length;
+
+    if (cur >= max) {
+      if (warnId) document.getElementById(warnId).style.display = 'block';
+      return;
     }
 
-    function jumpTo(id) {
-      document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    const last = body.rows[body.rows.length - 1];
+    const nr = last.cloneNode(true);
 
-    function addPanel(cid, cls, cols, max, infoId, warnId) {
-      var c = document.getElementById(cid);
-      var cur = c.querySelectorAll('.prow').length;
-      if (cur >= max) { document.getElementById(warnId).style.display = 'block'; return; }
-      var row = document.createElement('div');
-      row.className = 'prow ' + cls;
-      var html = '';
-      for (var i = 0; i < cols; i++) { html += '<input type="text" placeholder="N/A">'; }
-      row.innerHTML = html;
-      c.appendChild(row);
-      var nc = cur + 1;
-      document.getElementById(infoId).textContent = (max < 99) ? nc + ' / ' + max + ' rows' : nc + ' rows';
-      if (nc >= max) { document.getElementById(warnId).style.display = 'block'; }
-    }
+    nr.querySelectorAll('input').forEach(i => i.value = '');
+    nr.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
 
-    function addTbl(bodyId, max, infoId, warnId) {
-      var body = document.getElementById(bodyId);
-      var cur = body.querySelectorAll('tr').length;
-      if (cur >= max) { if (warnId) document.getElementById(warnId).style.display = 'block'; return; }
-      var last = body.rows[body.rows.length - 1];
-      var nr = last.cloneNode(true);
-      nr.querySelectorAll('input').forEach(function (i) { i.value = ''; });
-      nr.querySelectorAll('select').forEach(function (s) { s.selectedIndex = 0; });
-      body.appendChild(nr);
-      var nc = cur + 1;
-      document.getElementById(infoId).textContent = (max < 99) ? nc + ' / ' + max + ' rows' : nc + ' rows';
-      if (warnId && nc >= max) { document.getElementById(warnId).style.display = 'block'; }
-    }
+    body.appendChild(nr);
 
-    // A row is blank only if the user left every field empty.
-    // Rows where the user explicitly typed "N/A" are kept.
-    function isRowBlank(vals) {
-      return vals.every(function (v) { return v === ''; });
-    }
+    const nc = cur + 1;
+    document.getElementById(infoId).textContent =
+      (max < 99) ? nc + ' / ' + max + ' rows' : nc + ' rows';
+  }
 
-    // Panel rows (ws1-left / ws1-right) → flat keys: prefix_colKey_rowNum
-    function getPanelFlat(id, prefix, colKeys) {
-      var result = {};
-      var rowNum = 0;
-      document.getElementById(id).querySelectorAll('.prow').forEach(function (row) {
-        var vals = [];
-        row.querySelectorAll('input').forEach(function (inp) { vals.push(inp.value.trim()); });
-        if (isRowBlank(vals)) return;
-        rowNum++;
-        colKeys.forEach(function (key, i) {
-          result[prefix + '_' + key + '_' + rowNum] = vals[i] !== undefined ? vals[i] : '';
-        });
+  /* =========================
+     DATA CLEANING
+  ========================= */
+  function isRowBlank(vals) {
+    return vals.every(v => v === '');
+  }
+
+  function getPanelFlat(id, prefix, colKeys) {
+    const result = {};
+    let rowNum = 0;
+
+    document.getElementById(id).querySelectorAll('.prow').forEach(row => {
+      const vals = Array.from(row.querySelectorAll('input')).map(i => i.value.trim());
+      if (isRowBlank(vals)) return;
+
+      rowNum++;
+      colKeys.forEach((key, i) => {
+        result[`${prefix}_${key}_${rowNum}`] = vals[i] || '';
       });
-      return result;
-    }
+    });
 
-    // Table rows (<tr>) → flat keys: prefix_colKey_rowNum
-    function getTblFlat(id, prefix, colKeys) {
-      var result = {};
-      var rowNum = 0;
-      document.getElementById(id).querySelectorAll('tr').forEach(function (tr) {
-        var vals = [];
-        tr.querySelectorAll('input, select').forEach(function (el) { vals.push(el.value.trim()); });
-        if (isRowBlank(vals)) return;
-        rowNum++;
-        colKeys.forEach(function (key, i) {
-          result[prefix + '_' + key + '_' + rowNum] = vals[i] !== undefined ? vals[i] : '';
-        });
+    return result;
+  }
+
+  function getTblFlat(id, prefix, colKeys) {
+    const result = {};
+    let rowNum = 0;
+
+    document.getElementById(id).querySelectorAll('tr').forEach(tr => {
+      const vals = Array.from(tr.querySelectorAll('input, select')).map(el => el.value.trim());
+      if (isRowBlank(vals)) return;
+
+      rowNum++;
+      colKeys.forEach((key, i) => {
+        result[`${prefix}_${key}_${rowNum}`] = vals[i] || '';
       });
-      return result;
+    });
+
+    return result;
+  }
+
+  /* =========================
+     VALIDATION
+  ========================= */
+  function validateForm() {
+    const required = ['f-name', 'f-pos', 'f-org', 'f-contact'];
+
+    for (let id of required) {
+      if (!document.getElementById(id).value.trim()) {
+        alert('Please complete all required fields.');
+        return false;
+      }
     }
 
-    function submitForm() {
-      var name    = document.getElementById('f-name').value.trim();
-      var pos     = document.getElementById('f-pos').value.trim();
-      var org     = document.getElementById('f-org').value.trim();
-      var contact = document.getElementById('f-contact').value.trim();
-      var orgEl   = document.querySelector('.oc.sel .oname');
-      var indEl   = document.querySelector('input[name=indt]:checked');
+    if (!document.querySelector('.oc.sel')) {
+      alert('Please select your organization type.');
+      return false;
+    }
 
-      if (!name || !pos || !org || !contact) {
-        alert('Please fill in all Respondent Information fields before submitting.');
-        return;
-      }
-      if (!orgEl) {
-        alert('Please select your Type of Organization before submitting.');
-        return;
-      }
+    return true;
+  }
 
-      var payload = {
-        timestamp:    new Date().toLocaleString('en-PH'),
-        name:         name,
-        position:     pos,
-        organization: org,
-        contact:      contact,
-        orgType:      orgEl.textContent,
-        industryType: indEl ? indEl.parentElement.textContent.trim() : '',
-        ws6_remarks:  document.getElementById('f-remarks').value.trim()
-      };
+  /* =========================
+     SUBMIT
+  ========================= */
+  let isSubmitting = false;
 
-      Object.assign(payload, getPanelFlat('ws1-left',  'ws1_sectors',     ['sector', 'occupation', 'vacancies']));
-      Object.assign(payload, getPanelFlat('ws1-right', 'ws1_hardFill',    ['occupation']));
-      Object.assign(payload, getTblFlat('ws2-body',    'ws2',             ['occupation', 'demandLevel', 'supplyLevel', 'ncRequired', 'remarks']));
-      Object.assign(payload, getTblFlat('ws3-body',    'ws3',             ['occupation', 'technicalSkillsGap', 'softSkillsGap', 'ncRequired', 'trainingNeeded']));
-      Object.assign(payload, getTblFlat('ws4-body',    'ws4',             ['skill', 'relatedOccupation', 'noOfVacancies', 'industryValidated', 'priorityRank']));
-      Object.assign(payload, getTblFlat('ws5-body',    'ws5',             ['prioritySkill', 'proposedTrainingProgram', 'leadAgency', 'targetBeneficiaries', 'timeline']));
-      Object.assign(payload, getTblFlat('ws6-body',    'ws6_commitments', ['sectorAgency', 'commitment', 'type', 'timeline', 'focalPerson']));
+  function submitForm() {
+    if (isSubmitting) return;
 
-      var btn      = document.getElementById('sub-btn');
-      var spin     = document.getElementById('spinner');
-      var statusEl = document.getElementById('status-msg');
+    if (!validateForm()) return;
 
-      btn.disabled = true;
-      spin.style.display = 'block';
-      statusEl.textContent = '';
-      statusEl.className = 'status-msg';
+    isSubmitting = true;
 
-      fetch(SHEET_URL, {
-        method:  'POST',
-        mode:    'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload)
+    const btn = document.getElementById('sub-btn');
+    const spin = document.getElementById('spinner');
+    const statusEl = document.getElementById('status-msg');
+
+    btn.disabled = true;
+    spin.style.display = 'block';
+    statusEl.textContent = '';
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+
+      name: document.getElementById('f-name').value.trim(),
+      position: document.getElementById('f-pos').value.trim(),
+      organization: document.getElementById('f-org').value.trim(),
+      contact: document.getElementById('f-contact').value.trim(),
+
+      orgType: document.querySelector('.oc.sel .oname')?.textContent || '',
+      industryType: document.querySelector('input[name=indt]:checked')?.parentElement.textContent.trim() || '',
+
+      ws6_remarks: document.getElementById('f-remarks').value.trim()
+    };
+
+    Object.assign(payload,
+      getPanelFlat('ws1-left', 'ws1_sectors', ['sector', 'occupation', 'vacancies']),
+      getPanelFlat('ws1-right', 'ws1_hardFill', ['occupation']),
+      getTblFlat('ws2-body', 'ws2', ['occupation', 'demand', 'supply', 'nc', 'remarks']),
+      getTblFlat('ws3-body', 'ws3', ['occupation', 'tech', 'soft', 'nc', 'training']),
+      getTblFlat('ws4-body', 'ws4', ['skill', 'occupation', 'vacancies', 'validated', 'rank']),
+      getTblFlat('ws5-body', 'ws5', ['skill', 'program', 'agency', 'beneficiaries', 'timeline']),
+      getTblFlat('ws6-body', 'ws6', ['sector', 'commitment', 'type', 'timeline', 'focal'])
+    );
+
+    fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(() => {
+        spin.style.display = 'none';
+        document.getElementById('sov').classList.add('show');
+        localStorage.clear(); // clear autosave
       })
-        .then(function () {
-          spin.style.display = 'none';
-          document.getElementById('sov').classList.add('show');
-        })
-        .catch(function (err) {
-          spin.style.display = 'none';
-          btn.disabled = false;
-          statusEl.textContent = 'Submission failed. Please check your connection and try again.';
-          statusEl.className = 'status-msg err';
-          console.error(err);
-        });
-    }
-  </script>
+      .catch(() => {
+        spin.style.display = 'none';
+        btn.disabled = false;
+        isSubmitting = false;
+
+        statusEl.textContent = 'Submission failed. Try again.';
+        statusEl.className = 'status-msg err';
+      });
+  }
+
+  /* =========================
+     AUTO SAVE (NEW 🔥)
+  ========================= */
+  setInterval(() => {
+    const data = {};
+    document.querySelectorAll('input, textarea, select').forEach(el => {
+      if (el.id) data[el.id] = el.value;
+    });
+    localStorage.setItem('lmi_form_backup', JSON.stringify(data));
+  }, 3000);
+
+  window.onload = () => {
+    const saved = JSON.parse(localStorage.getItem('lmi_form_backup') || '{}');
+    Object.keys(saved).forEach(id => {
+      if (document.getElementById(id)) {
+        document.getElementById(id).value = saved[id];
+      }
+    });
+  };
+</script>
 </body>
 
 </html>
