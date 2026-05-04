@@ -1731,22 +1731,37 @@
   /* =========================
      AUTO SAVE (NEW 🔥)
   ========================= */
-  setInterval(() => {
-    const data = {};
-    document.querySelectorAll('input, textarea, select').forEach(el => {
-      if (el.id) data[el.id] = el.value;
-    });
-    localStorage.setItem('lmi_form_backup', JSON.stringify(data));
-  }, 3000);
+function getAllFormElements() {
+  return Array.from(
+    document.querySelectorAll('input[type=text], input[type=radio], textarea, select')
+  );
+}
 
-  window.onload = () => {
-    const saved = JSON.parse(localStorage.getItem('lmi_form_backup') || '{}');
-    Object.keys(saved).forEach(id => {
-      if (document.getElementById(id)) {
-        document.getElementById(id).value = saved[id];
-      }
-    });
-  };
+setInterval(() => {
+  const data = {};
+  getAllFormElements().forEach((el, idx) => {
+    const key = el.id ? el.id : '__el_' + idx;
+    if (el.type === 'radio') {
+      if (el.checked) data[key] = 'checked';
+    } else {
+      data[key] = el.value;
+    }
+  });
+  localStorage.setItem('lmi_form_backup', JSON.stringify(data));
+}, 3000);
+
+window.onload = () => {
+  const saved = JSON.parse(localStorage.getItem('lmi_form_backup') || '{}');
+  getAllFormElements().forEach((el, idx) => {
+    const key = el.id ? el.id : '__el_' + idx;
+    if (saved[key] === undefined) return;
+    if (el.type === 'radio') {
+      if (saved[key] === 'checked') el.checked = true;
+    } else {
+      el.value = saved[key];
+    }
+  });
+};
 </script>
 </body>
 
