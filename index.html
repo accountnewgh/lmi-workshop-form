@@ -1595,48 +1595,41 @@
       }
     }
 
-    // Returns true if a row is completely blank (user typed nothing).
-    // If the user explicitly typed "N/A" (case-insensitive), that counts as real input.
+    // A row is blank only if the user left every field empty.
+    // Rows where the user explicitly typed "N/A" are kept.
     function isRowBlank(vals) {
-      return vals.every(function(v) { return v === ''; });
+      return vals.every(function (v) { return v === ''; });
     }
 
-    // Collect panel rows (ws1 left/right) into flat keyed columns.
-    // colKeys: array of column key names, e.g. ['sector','occupation','vacancies']
-    // Returns an object like { ws1_sector_1: '...', ws1_occupation_1: '...', ... }
+    // Panel rows (ws1-left / ws1-right) → flat keys: prefix_colKey_rowNum
     function getPanelFlat(id, prefix, colKeys) {
       var result = {};
       var rowNum = 0;
-      document.getElementById(id).querySelectorAll('.prow').forEach(function(row) {
-        var inputs = row.querySelectorAll('input');
+      document.getElementById(id).querySelectorAll('.prow').forEach(function (row) {
         var vals = [];
-        inputs.forEach(function(inp) { vals.push(inp.value.trim()); });
-        if (isRowBlank(vals)) return; // skip blank rows
+        row.querySelectorAll('input').forEach(function (inp) { vals.push(inp.value.trim()); });
+        if (isRowBlank(vals)) return;
         rowNum++;
-        colKeys.forEach(function(key, i) {
-          result[prefix + '_' + key + '_' + rowNum] = vals[i] || '';
+        colKeys.forEach(function (key, i) {
+          result[prefix + '_' + key + '_' + rowNum] = vals[i] !== undefined ? vals[i] : '';
         });
       });
-      result[prefix + '_rowCount'] = rowNum;
       return result;
     }
 
-    // Collect table rows into flat keyed columns.
-    // colKeys: array of column key names matching the th order.
+    // Table rows (<tr>) → flat keys: prefix_colKey_rowNum
     function getTblFlat(id, prefix, colKeys) {
       var result = {};
       var rowNum = 0;
-      document.getElementById(id).querySelectorAll('tr').forEach(function(tr) {
-        var els = tr.querySelectorAll('input, select');
+      document.getElementById(id).querySelectorAll('tr').forEach(function (tr) {
         var vals = [];
-        els.forEach(function(el) { vals.push(el.value.trim()); });
-        if (isRowBlank(vals)) return; // skip blank rows
+        tr.querySelectorAll('input, select').forEach(function (el) { vals.push(el.value.trim()); });
+        if (isRowBlank(vals)) return;
         rowNum++;
-        colKeys.forEach(function(key, i) {
-          result[prefix + '_' + key + '_' + rowNum] = vals[i] || '';
+        colKeys.forEach(function (key, i) {
+          result[prefix + '_' + key + '_' + rowNum] = vals[i] !== undefined ? vals[i] : '';
         });
       });
-      result[prefix + '_rowCount'] = rowNum;
       return result;
     }
 
@@ -1657,7 +1650,6 @@
         return;
       }
 
-      // Build flat payload — each workshop sub-column gets its own key per row number.
       var payload = {
         timestamp: new Date().toLocaleString('en-PH'),
         name: name,
@@ -1669,22 +1661,21 @@
         ws6_remarks: document.getElementById('f-remarks').value.trim()
       };
 
-      // WS1 — Top Hiring Sectors (Sector | Occupation | Vacancies)
-      Object.assign(payload, getPanelFlat('ws1-left', 'ws1_sector', ['sector','occupation','vacancies']));
-      // WS1 — Hard-to-Fill Occupations (single column)
-      Object.assign(payload, getPanelFlat('ws1-right', 'ws1_hardFill', ['occupation']));
-      // WS2 — Supply vs Demand Matrix
-      Object.assign(payload, getTblFlat('ws2-body', 'ws2', ['occupation','demandLevel','supplyLevel','ncRequired','remarks']));
-      // WS3 — Skills Gap
-      Object.assign(payload, getTblFlat('ws3-body', 'ws3', ['occupation','technicalSkillsGap','softSkillsGap','ncRequired','trainingNeeded']));
+      // WS1 — Top Hiring Sectors: prefix MUST be 'ws1_sectors' (matches Code.gs)
+      Object.assign(payload, getPanelFlat('ws1-left',  'ws1_sectors',     ['sector', 'occupation', 'vacancies']));
+      // WS1 — Hard-to-Fill Occupations
+      Object.assign(payload, getPanelFlat('ws1-right', 'ws1_hardFill',    ['occupation']));
+      // WS2 — Supply vs. Demand Matrix
+      Object.assign(payload, getTblFlat('ws2-body',    'ws2',             ['occupation', 'demandLevel', 'supplyLevel', 'ncRequired', 'remarks']));
+      // WS3 — Skills Gap Identification
+      Object.assign(payload, getTblFlat('ws3-body',    'ws3',             ['occupation', 'technicalSkillsGap', 'softSkillsGap', 'ncRequired', 'trainingNeeded']));
       // WS4 — Priority Skills Ranking
-      Object.assign(payload, getTblFlat('ws4-body', 'ws4', ['skill','relatedOccupation','noOfVacancies','industryValidated','priorityRank']));
+      Object.assign(payload, getTblFlat('ws4-body',    'ws4',             ['skill', 'relatedOccupation', 'noOfVacancies', 'industryValidated', 'priorityRank']));
       // WS5 — Intervention & Program Mapping
-      Object.assign(payload, getTblFlat('ws5-body', 'ws5', ['prioritySkill','proposedTrainingProgram','leadAgency','targetBeneficiaries','timeline']));
-      // WS6 — Industry-Academe-Government Commitments
-      Object.assign(payload, getTblFlat('ws6-body', 'ws6', ['sectorAgency','commitment','type','timeline','focalPerson']));
+      Object.assign(payload, getTblFlat('ws5-body',    'ws5',             ['prioritySkill', 'proposedTrainingProgram', 'leadAgency', 'targetBeneficiaries', 'timeline']));
+      // WS6 — Commitments: prefix MUST be 'ws6_commitments' (matches Code.gs)
+      Object.assign(payload, getTblFlat('ws6-body',    'ws6_commitments', ['sectorAgency', 'commitment', 'type', 'timeline', 'focalPerson']));
 
-      // If no URL configured yet, just show success modal (for offline/demo use)
       if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
         console.log('Submission data:', payload);
         document.getElementById('sov').classList.add('show');
