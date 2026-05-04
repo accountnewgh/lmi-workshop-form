@@ -1595,28 +1595,49 @@
       }
     }
 
-    function getPanelRows(id) {
-      var rows = [];
-      document.getElementById(id).querySelectorAll('.prow').forEach(function (row) {
-        var vals = [];
-        row.querySelectorAll('input').forEach(function (inp) {
-          vals.push(inp.value.trim() || 'N/A');
-        });
-        rows.push(vals.join(' | '));
-      });
-      return rows.join('\n');
+    // Returns true if a row is completely blank (user typed nothing).
+    // If the user explicitly typed "N/A" (case-insensitive), that counts as real input.
+    function isRowBlank(vals) {
+      return vals.every(function(v) { return v === ''; });
     }
 
-    function getTblRows(id) {
-      var rows = [];
-      document.getElementById(id).querySelectorAll('tr').forEach(function (tr) {
+    // Collect panel rows (ws1 left/right) into flat keyed columns.
+    // colKeys: array of column key names, e.g. ['sector','occupation','vacancies']
+    // Returns an object like { ws1_sector_1: '...', ws1_occupation_1: '...', ... }
+    function getPanelFlat(id, prefix, colKeys) {
+      var result = {};
+      var rowNum = 0;
+      document.getElementById(id).querySelectorAll('.prow').forEach(function(row) {
+        var inputs = row.querySelectorAll('input');
         var vals = [];
-        tr.querySelectorAll('input, select').forEach(function (el) {
-          vals.push(el.value.trim() || 'N/A');
+        inputs.forEach(function(inp) { vals.push(inp.value.trim()); });
+        if (isRowBlank(vals)) return; // skip blank rows
+        rowNum++;
+        colKeys.forEach(function(key, i) {
+          result[prefix + '_' + key + '_' + rowNum] = vals[i] || '';
         });
-        rows.push(vals.join(' | '));
       });
-      return rows.join('\n');
+      result[prefix + '_rowCount'] = rowNum;
+      return result;
+    }
+
+    // Collect table rows into flat keyed columns.
+    // colKeys: array of column key names matching the th order.
+    function getTblFlat(id, prefix, colKeys) {
+      var result = {};
+      var rowNum = 0;
+      document.getElementById(id).querySelectorAll('tr').forEach(function(tr) {
+        var els = tr.querySelectorAll('input, select');
+        var vals = [];
+        els.forEach(function(el) { vals.push(el.value.trim()); });
+        if (isRowBlank(vals)) return; // skip blank rows
+        rowNum++;
+        colKeys.forEach(function(key, i) {
+          result[prefix + '_' + key + '_' + rowNum] = vals[i] || '';
+        });
+      });
+      result[prefix + '_rowCount'] = rowNum;
+      return result;
     }
 
     function submitForm() {
@@ -1636,6 +1657,7 @@
         return;
       }
 
+      // Build flat payload — each workshop sub-column gets its own key per row number.
       var payload = {
         timestamp: new Date().toLocaleString('en-PH'),
         name: name,
@@ -1644,15 +1666,23 @@
         contact: contact,
         orgType: orgEl.textContent,
         industryType: indEl ? indEl.parentElement.textContent.trim() : '',
-        ws1_sectors: getPanelRows('ws1-left'),
-        ws1_hardFill: getPanelRows('ws1-right'),
-        ws2_matrix: getTblRows('ws2-body'),
-        ws3_gaps: getTblRows('ws3-body'),
-        ws4_ranking: getTblRows('ws4-body'),
-        ws5_programs: getTblRows('ws5-body'),
-        ws6_commitments: getTblRows('ws6-body'),
         ws6_remarks: document.getElementById('f-remarks').value.trim()
       };
+
+      // WS1 — Top Hiring Sectors (Sector | Occupation | Vacancies)
+      Object.assign(payload, getPanelFlat('ws1-left', 'ws1_sector', ['sector','occupation','vacancies']));
+      // WS1 — Hard-to-Fill Occupations (single column)
+      Object.assign(payload, getPanelFlat('ws1-right', 'ws1_hardFill', ['occupation']));
+      // WS2 — Supply vs Demand Matrix
+      Object.assign(payload, getTblFlat('ws2-body', 'ws2', ['occupation','demandLevel','supplyLevel','ncRequired','remarks']));
+      // WS3 — Skills Gap
+      Object.assign(payload, getTblFlat('ws3-body', 'ws3', ['occupation','technicalSkillsGap','softSkillsGap','ncRequired','trainingNeeded']));
+      // WS4 — Priority Skills Ranking
+      Object.assign(payload, getTblFlat('ws4-body', 'ws4', ['skill','relatedOccupation','noOfVacancies','industryValidated','priorityRank']));
+      // WS5 — Intervention & Program Mapping
+      Object.assign(payload, getTblFlat('ws5-body', 'ws5', ['prioritySkill','proposedTrainingProgram','leadAgency','targetBeneficiaries','timeline']));
+      // WS6 — Industry-Academe-Government Commitments
+      Object.assign(payload, getTblFlat('ws6-body', 'ws6', ['sectorAgency','commitment','type','timeline','focalPerson']));
 
       // If no URL configured yet, just show success modal (for offline/demo use)
       if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
