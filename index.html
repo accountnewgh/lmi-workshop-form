@@ -1676,7 +1676,7 @@
       // WS6 — Commitments: prefix MUST be 'ws6_commitments' (matches Code.gs)
       Object.assign(payload, getTblFlat('ws6-body',    'ws6_commitments', ['sectorAgency', 'commitment', 'type', 'timeline', 'focalPerson']));
 
-      if (SHEET_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+      if (SHEET_URL === 'https://script.google.com/macros/s/AKfycbwMWT9WAcvzadE3kCtiZqz7pC5omAPvBuwzSu2EXyd5oEecB5N9H6kavE4FSFbndcLbBw/exec') {
         console.log('Submission data:', payload);
         document.getElementById('sov').classList.add('show');
         return;
