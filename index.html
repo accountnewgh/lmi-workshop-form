@@ -1508,23 +1508,14 @@
   </div>
 
   <script>
-    // ─────────────────────────────────────────────────────────────────
-    //  STEP 1: Replace the URL below with your Google Apps Script URL.
-    //  See setup instructions at the bottom of this file.
-    // ─────────────────────────────────────────────────────────────────
     var SHEET_URL = 'https://script.google.com/macros/s/AKfycbwMWT9WAcvzadE3kCtiZqz7pC5omAPvBuwzSu2EXyd5oEecB5N9H6kavE4FSFbndcLbBw/exec';
-    // ─────────────────────────────────────────────────────────────────
 
     function selectOrg(id, isInd) {
-      document.querySelectorAll('.oc').forEach(function (o) {
-        o.classList.remove('sel');
-      });
+      document.querySelectorAll('.oc').forEach(function (o) { o.classList.remove('sel'); });
       document.getElementById(id).classList.add('sel');
       document.getElementById('ind-sub').classList.remove('show');
       document.getElementById('proc-btn').classList.remove('show');
-      document.querySelectorAll('input[name=indt]').forEach(function (r) {
-        r.checked = false;
-      });
+      document.querySelectorAll('input[name=indt]').forEach(function (r) { r.checked = false; });
       document.getElementById('ws-area').style.display = 'none';
       if (isInd) {
         document.getElementById('ind-sub').classList.add('show');
@@ -1543,9 +1534,7 @@
       var orgEl = document.querySelector('.oc.sel .oname');
       var indEl = document.querySelector('input[name=indt]:checked');
       var msg = orgEl ? orgEl.textContent : '—';
-      if (indEl) {
-        msg += ' (' + indEl.parentElement.textContent.trim() + ')';
-      }
+      if (indEl) { msg += ' (' + indEl.parentElement.textContent.trim() + ')'; }
       document.getElementById('banner-org').textContent = msg;
       area.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -1557,32 +1546,22 @@
     function addPanel(cid, cls, cols, max, infoId, warnId) {
       var c = document.getElementById(cid);
       var cur = c.querySelectorAll('.prow').length;
-      if (cur >= max) {
-        document.getElementById(warnId).style.display = 'block';
-        return;
-      }
+      if (cur >= max) { document.getElementById(warnId).style.display = 'block'; return; }
       var row = document.createElement('div');
       row.className = 'prow ' + cls;
       var html = '';
-      for (var i = 0; i < cols; i++) {
-        html += '<input type="text" placeholder="N/A">';
-      }
+      for (var i = 0; i < cols; i++) { html += '<input type="text" placeholder="N/A">'; }
       row.innerHTML = html;
       c.appendChild(row);
       var nc = cur + 1;
       document.getElementById(infoId).textContent = (max < 99) ? nc + ' / ' + max + ' rows' : nc + ' rows';
-      if (nc >= max) {
-        document.getElementById(warnId).style.display = 'block';
-      }
+      if (nc >= max) { document.getElementById(warnId).style.display = 'block'; }
     }
 
     function addTbl(bodyId, max, infoId, warnId) {
       var body = document.getElementById(bodyId);
       var cur = body.querySelectorAll('tr').length;
-      if (cur >= max) {
-        if (warnId) document.getElementById(warnId).style.display = 'block';
-        return;
-      }
+      if (cur >= max) { if (warnId) document.getElementById(warnId).style.display = 'block'; return; }
       var last = body.rows[body.rows.length - 1];
       var nr = last.cloneNode(true);
       nr.querySelectorAll('input').forEach(function (i) { i.value = ''; });
@@ -1590,9 +1569,7 @@
       body.appendChild(nr);
       var nc = cur + 1;
       document.getElementById(infoId).textContent = (max < 99) ? nc + ' / ' + max + ' rows' : nc + ' rows';
-      if (warnId && nc >= max) {
-        document.getElementById(warnId).style.display = 'block';
-      }
+      if (warnId && nc >= max) { document.getElementById(warnId).style.display = 'block'; }
     }
 
     // A row is blank only if the user left every field empty.
@@ -1634,12 +1611,12 @@
     }
 
     function submitForm() {
-      var name = document.getElementById('f-name').value.trim();
-      var pos = document.getElementById('f-pos').value.trim();
-      var org = document.getElementById('f-org').value.trim();
+      var name    = document.getElementById('f-name').value.trim();
+      var pos     = document.getElementById('f-pos').value.trim();
+      var org     = document.getElementById('f-org').value.trim();
       var contact = document.getElementById('f-contact').value.trim();
-      var orgEl = document.querySelector('.oc.sel .oname');
-      var indEl = document.querySelector('input[name=indt]:checked');
+      var orgEl   = document.querySelector('.oc.sel .oname');
+      var indEl   = document.querySelector('input[name=indt]:checked');
 
       if (!name || !pos || !org || !contact) {
         alert('Please fill in all Respondent Information fields before submitting.');
@@ -1651,39 +1628,26 @@
       }
 
       var payload = {
-        timestamp: new Date().toLocaleString('en-PH'),
-        name: name,
-        position: pos,
+        timestamp:    new Date().toLocaleString('en-PH'),
+        name:         name,
+        position:     pos,
         organization: org,
-        contact: contact,
-        orgType: orgEl.textContent,
+        contact:      contact,
+        orgType:      orgEl.textContent,
         industryType: indEl ? indEl.parentElement.textContent.trim() : '',
-        ws6_remarks: document.getElementById('f-remarks').value.trim()
+        ws6_remarks:  document.getElementById('f-remarks').value.trim()
       };
 
-      // WS1 — Top Hiring Sectors: prefix MUST be 'ws1_sectors' (matches Code.gs)
       Object.assign(payload, getPanelFlat('ws1-left',  'ws1_sectors',     ['sector', 'occupation', 'vacancies']));
-      // WS1 — Hard-to-Fill Occupations
       Object.assign(payload, getPanelFlat('ws1-right', 'ws1_hardFill',    ['occupation']));
-      // WS2 — Supply vs. Demand Matrix
       Object.assign(payload, getTblFlat('ws2-body',    'ws2',             ['occupation', 'demandLevel', 'supplyLevel', 'ncRequired', 'remarks']));
-      // WS3 — Skills Gap Identification
       Object.assign(payload, getTblFlat('ws3-body',    'ws3',             ['occupation', 'technicalSkillsGap', 'softSkillsGap', 'ncRequired', 'trainingNeeded']));
-      // WS4 — Priority Skills Ranking
       Object.assign(payload, getTblFlat('ws4-body',    'ws4',             ['skill', 'relatedOccupation', 'noOfVacancies', 'industryValidated', 'priorityRank']));
-      // WS5 — Intervention & Program Mapping
       Object.assign(payload, getTblFlat('ws5-body',    'ws5',             ['prioritySkill', 'proposedTrainingProgram', 'leadAgency', 'targetBeneficiaries', 'timeline']));
-      // WS6 — Commitments: prefix MUST be 'ws6_commitments' (matches Code.gs)
       Object.assign(payload, getTblFlat('ws6-body',    'ws6_commitments', ['sectorAgency', 'commitment', 'type', 'timeline', 'focalPerson']));
 
-      if (SHEET_URL === 'https://script.google.com/macros/s/AKfycbwMWT9WAcvzadE3kCtiZqz7pC5omAPvBuwzSu2EXyd5oEecB5N9H6kavE4FSFbndcLbBw/exec') {
-        console.log('Submission data:', payload);
-        document.getElementById('sov').classList.add('show');
-        return;
-      }
-
-      var btn = document.getElementById('sub-btn');
-      var spin = document.getElementById('spinner');
+      var btn      = document.getElementById('sub-btn');
+      var spin     = document.getElementById('spinner');
       var statusEl = document.getElementById('status-msg');
 
       btn.disabled = true;
@@ -1692,10 +1656,10 @@
       statusEl.className = 'status-msg';
 
       fetch(SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
+        method:  'POST',
+        mode:    'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body:    JSON.stringify(payload)
       })
         .then(function () {
           spin.style.display = 'none';
