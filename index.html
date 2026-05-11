@@ -158,11 +158,14 @@
       border-radius: 6px; margin-bottom: 14px; overflow: hidden;
       box-shadow: 0 1px 4px rgba(13,27,42,.08)
     }
-    .wsp { flex: 1; text-align: center; padding: 10px 4px; border-right: 1px solid var(--b2); cursor: pointer; transition: background .15s }
+    .wsp { flex: 1; text-align: center; padding: 10px 4px; border-right: 1px solid var(--b2); cursor: pointer; transition: background .15s; position: relative }
     .wsp:last-child { border-right: none }
     .wsp:hover { background: #F4F7FA }
     .wsp-n { display: block; width: 22px; height: 22px; background: var(--b1); color: #fff; border-radius: 50%; margin: 0 auto 4px; font-size: 11px; font-weight: 700; line-height: 22px }
     .wsp-l { font-size: 10px; color: var(--t3); line-height: 1.3 }
+    /* Progress step states */
+    .wsp.ws-ok .wsp-n { background: var(--green) }
+    .wsp.ws-err .wsp-n { background: var(--red) }
 
     /* WORKSHOP CARDS */
     .ws-card { background: #fff; border: 1px solid var(--b2); border-radius: 6px; padding: 24px 28px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(13,27,42,.08) }
@@ -178,6 +181,31 @@
     .ws-hdr { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--navy); padding-bottom: 12px; border-bottom: 2px solid var(--b2); margin-bottom: 12px }
     .ws-badge { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'Source Sans 3', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; margin-right: 8px; vertical-align: middle }
     .ws-sub { font-size: 13px; color: var(--t2); margin-bottom: 14px; line-height: 1.6; font-weight: 300 }
+
+    /* VALIDATION ERROR inside workshop */
+    .ws-error {
+      display: none;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-left: 3px solid var(--red);
+      border-radius: 4px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--red);
+      line-height: 1.5;
+    }
+    .ws-error.show { display: block }
+
+    /* Row highlight on error */
+    .row-invalid td input,
+    .row-invalid td select {
+      background: #FEF2F2 !important;
+    }
+    .row-invalid.first-row td input,
+    .row-invalid.first-row td select {
+      border-bottom: 2px solid var(--red);
+    }
 
     /* TABLES */
     .tbl-wrap { overflow-x: auto; margin-top: 4px; border-radius: 5px; border: 1px solid var(--b1) }
@@ -215,6 +243,9 @@
     .prow input:last-child { border-right: none }
     .prow input:focus { background: #EDF2FA }
 
+    /* Panel row error highlight */
+    .prow.prow-invalid input { background: #FEF2F2 !important }
+
     /* ROW NUMBER LABEL */
     .row-label { font-size: 10px; color: var(--t3); padding: 8px 6px; text-align: center; border-right: 1px solid var(--b2); font-weight: 600; background: #F8F6F2; min-width: 28px }
 
@@ -233,6 +264,24 @@
     .status-msg { font-size: 13px; margin-top: 10px; text-align: center; min-height: 18px; position: relative; z-index: 1 }
     .status-msg.err { color: #F87171 }
     .status-msg.ok { color: #86EFAC }
+
+    /* GLOBAL VALIDATION SUMMARY */
+    .val-summary {
+      display: none;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      border-radius: 5px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: var(--red);
+      line-height: 1.8;
+      position: relative;
+      z-index: 1;
+    }
+    .val-summary.show { display: block }
+    .val-summary strong { display: block; margin-bottom: 6px; font-size: 14px }
+    .val-summary ul { padding-left: 18px }
 
     /* SUCCESS OVERLAY */
     .sov { display: none; position: fixed; inset: 0; background: rgba(13,27,42,.7); z-index: 1000; align-items: center; justify-content: center }
@@ -363,22 +412,23 @@
 
       <div class="banner">
         <span style="flex-shrink:0">&#10003;</span>
-        <span>Organization: <strong id="banner-org" style="color:var(--gold2)">—</strong>&nbsp;&nbsp;|&nbsp;&nbsp;Scroll down and complete all 6 workshops below, then submit at the bottom.</span>
+        <span>Organization: <strong id="banner-org" style="color:var(--gold2)">—</strong>&nbsp;&nbsp;|&nbsp;&nbsp;Scroll down and complete all 6 workshops below. <strong style="color:var(--gold2)">At least one row per workshop is required.</strong></span>
       </div>
 
       <div class="ws-prog">
-        <div class="wsp" onclick="jumpTo('ws1')"><span class="wsp-n">1</span><span class="wsp-l">Hiring Sectors</span></div>
-        <div class="wsp" onclick="jumpTo('ws2')"><span class="wsp-n">2</span><span class="wsp-l">Supply &amp; Demand</span></div>
-        <div class="wsp" onclick="jumpTo('ws3')"><span class="wsp-n">3</span><span class="wsp-l">Skills Gap</span></div>
-        <div class="wsp" onclick="jumpTo('ws4')"><span class="wsp-n">4</span><span class="wsp-l">Priority Rank</span></div>
-        <div class="wsp" onclick="jumpTo('ws5')"><span class="wsp-n">5</span><span class="wsp-l">Programs</span></div>
-        <div class="wsp" onclick="jumpTo('ws6')"><span class="wsp-n">6</span><span class="wsp-l">Commitments</span></div>
+        <div class="wsp" id="prog1" onclick="jumpTo('ws1')"><span class="wsp-n">1</span><span class="wsp-l">Hiring Sectors</span></div>
+        <div class="wsp" id="prog2" onclick="jumpTo('ws2')"><span class="wsp-n">2</span><span class="wsp-l">Supply &amp; Demand</span></div>
+        <div class="wsp" id="prog3" onclick="jumpTo('ws3')"><span class="wsp-n">3</span><span class="wsp-l">Skills Gap</span></div>
+        <div class="wsp" id="prog4" onclick="jumpTo('ws4')"><span class="wsp-n">4</span><span class="wsp-l">Priority Rank</span></div>
+        <div class="wsp" id="prog5" onclick="jumpTo('ws5')"><span class="wsp-n">5</span><span class="wsp-l">Programs</span></div>
+        <div class="wsp" id="prog6" onclick="jumpTo('ws6')"><span class="wsp-n">6</span><span class="wsp-l">Commitments</span></div>
       </div>
 
       <!-- WS 1 -->
       <div class="ws-card" id="ws1">
         <div class="ws-hdr"><span class="ws-badge">Workshop 1 of 6</span>Top Hiring Sectors &amp; Hard-to-Fill Occupations</div>
-        <div class="ws-sub">Fill in your top hiring sectors and the occupations that are hardest to fill.</div>
+        <div class="ws-sub">Fill in your top hiring sectors and the occupations that are hardest to fill. <strong>At least one row is required in each panel.</strong></div>
+        <div class="ws-error" id="ws1-err">Please fill in at least one complete row in <strong>Top 5 Hiring Sectors</strong> (Sector + Occupation) and at least one entry in <strong>Hard-to-Fill Occupations</strong>.</div>
         <div class="two-col">
 
           <!-- Left panel: Top 5 Hiring Sectors -->
@@ -386,7 +436,7 @@
             <div class="ph2">Top Five (5) Hiring Sectors</div>
             <div class="psub p3"><span>Sector</span><span>Occupation</span><span>Vacancies</span></div>
             <div id="ws1-left">
-              <div class="prow p3"><input type="text" id="ws1_sec_s1" placeholder="e.g. Construction"><input type="text" id="ws1_sec_o1" placeholder="e.g. Welder"><input type="text" id="ws1_sec_v1" placeholder="0"></div>
+              <div class="prow p3" id="ws1-sec-r1"><input type="text" id="ws1_sec_s1" placeholder="e.g. Construction"><input type="text" id="ws1_sec_o1" placeholder="e.g. Welder"><input type="text" id="ws1_sec_v1" placeholder="0"></div>
               <div class="prow p3"><input type="text" id="ws1_sec_s2" placeholder="N/A"><input type="text" id="ws1_sec_o2" placeholder="N/A"><input type="text" id="ws1_sec_v2" placeholder="0"></div>
               <div class="prow p3"><input type="text" id="ws1_sec_s3" placeholder="N/A"><input type="text" id="ws1_sec_o3" placeholder="N/A"><input type="text" id="ws1_sec_v3" placeholder="0"></div>
               <div class="prow p3"><input type="text" id="ws1_sec_s4" placeholder="N/A"><input type="text" id="ws1_sec_o4" placeholder="N/A"><input type="text" id="ws1_sec_v4" placeholder="0"></div>
@@ -399,7 +449,7 @@
             <div class="ph2">Top Five (5) Hard-to-Fill Occupations</div>
             <div class="psub p1"><span>Occupation</span></div>
             <div id="ws1-right">
-              <div class="prow p1"><input type="text" id="ws1_htf_o1" placeholder="e.g. Welder"></div>
+              <div class="prow p1" id="ws1-htf-r1"><input type="text" id="ws1_htf_o1" placeholder="e.g. Welder"></div>
               <div class="prow p1"><input type="text" id="ws1_htf_o2" placeholder="e.g. Electrician"></div>
               <div class="prow p1"><input type="text" id="ws1_htf_o3" placeholder="e.g. Bookkeeper"></div>
               <div class="prow p1"><input type="text" id="ws1_htf_o4" placeholder="N/A"></div>
@@ -413,7 +463,8 @@
       <!-- WS 2 -->
       <div class="ws-card" id="ws2">
         <div class="ws-hdr"><span class="ws-badge">Workshop 2 of 6</span>Supply vs. Demand Matching Matrix</div>
-        <div class="ws-sub">Top 5 occupations — rate demand and supply level for each.</div>
+        <div class="ws-sub">Top 5 occupations — rate demand and supply level for each. <strong>At least one complete row is required.</strong></div>
+        <div class="ws-error" id="ws2-err">Please fill in at least one complete row: Occupation, Demand Level, and Supply Level are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -426,7 +477,7 @@
               </tr>
             </thead>
             <tbody id="ws2-body">
-              <tr>
+              <tr id="ws2-r1">
                 <td><input type="text" id="ws2_occ1" placeholder="Occupation"></td>
                 <td><select id="ws2_dem1"><option value="">--</option><option>High Demand</option><option>Medium Demand</option><option>Low Demand</option></select></td>
                 <td><select id="ws2_sup1"><option value="">--</option><option>High Supply</option><option>Medium Supply</option><option>Low Supply</option></select></td>
@@ -469,7 +520,8 @@
       <!-- WS 3 -->
       <div class="ws-card" id="ws3">
         <div class="ws-hdr"><span class="ws-badge">Workshop 3 of 6</span>Skills Gap Identification</div>
-        <div class="ws-sub">Identify technical and soft skills gaps for each occupation.</div>
+        <div class="ws-sub">Identify technical and soft skills gaps for each occupation. <strong>At least one complete row is required.</strong></div>
+        <div class="ws-error" id="ws3-err">Please fill in at least one complete row: Occupation and at least one Skills Gap field are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -482,7 +534,7 @@
               </tr>
             </thead>
             <tbody id="ws3-body">
-              <tr>
+              <tr id="ws3-r1">
                 <td><input type="text" id="ws3_occ1" placeholder="Occupation"></td>
                 <td><input type="text" id="ws3_tech1" placeholder="e.g. CNC operation"></td>
                 <td><input type="text" id="ws3_soft1" placeholder="e.g. Communication"></td>
@@ -526,6 +578,7 @@
       <div class="ws-card" id="ws4">
         <div class="ws-hdr"><span class="ws-badge">Workshop 4 of 6</span>Priority Skills Ranking</div>
         <div class="criteria"><strong>Criteria:</strong> With actual job vacancies &nbsp;·&nbsp; With employer validation &nbsp;·&nbsp; Trainable within 3–6 months &nbsp;·&nbsp; With high employment potential</div>
+        <div class="ws-error" id="ws4-err">Please fill in at least one complete row: Skill name and Related Occupation are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -538,7 +591,7 @@
               </tr>
             </thead>
             <tbody id="ws4-body">
-              <tr>
+              <tr id="ws4-r1">
                 <td><input type="text" id="ws4_skl1" placeholder="Skill name"></td>
                 <td><input type="text" id="ws4_occ1" placeholder="Occupation"></td>
                 <td><input type="text" id="ws4_vac1" placeholder="0"></td>
@@ -581,7 +634,8 @@
       <!-- WS 5 -->
       <div class="ws-card" id="ws5">
         <div class="ws-hdr"><span class="ws-badge">Workshop 5 of 6</span>Intervention &amp; Program Mapping</div>
-        <div class="ws-sub">Propose training programs and interventions for each priority skill.</div>
+        <div class="ws-sub">Propose training programs and interventions for each priority skill. <strong>At least one complete row is required.</strong></div>
+        <div class="ws-error" id="ws5-err">Please fill in at least one complete row: Priority Skill and Proposed Training Program are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -594,7 +648,7 @@
               </tr>
             </thead>
             <tbody id="ws5-body">
-              <tr>
+              <tr id="ws5-r1">
                 <td><input type="text" id="ws5_skl1" placeholder="Skill"></td>
                 <td><input type="text" id="ws5_prg1" placeholder="Program name"></td>
                 <td><input type="text" id="ws5_agn1" placeholder="e.g. TESDA"></td>
@@ -637,7 +691,8 @@
       <!-- WS 6 -->
       <div class="ws-card" id="ws6">
         <div class="ws-hdr"><span class="ws-badge">Workshop 6 of 6</span>Industry–Academe–Government Commitments</div>
-        <div class="ws-sub">State your organization's formal commitments to support the Provincial LMI Action Plan.</div>
+        <div class="ws-sub">State your organization's formal commitments to support the Provincial LMI Action Plan. <strong>At least one complete row is required.</strong></div>
+        <div class="ws-error" id="ws6-err">Please fill in at least one complete row: Sector/Agency and Commitment are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -650,7 +705,7 @@
               </tr>
             </thead>
             <tbody id="ws6-body">
-              <tr>
+              <tr id="ws6-r1">
                 <td><input type="text" id="ws6_sec1" placeholder="e.g. Tourism sector"></td>
                 <td><input type="text" id="ws6_com1" placeholder="e.g. Provide 20 OJT slots"></td>
                 <td><select id="ws6_typ1"><option value="">--</option><option>Training</option><option>Hiring</option><option>Data Sharing</option><option>Immersion</option></select></td>
@@ -692,6 +747,12 @@
           <label>Additional Remarks or Suggestions</label>
           <textarea id="f-remarks" placeholder="Any other inputs, concerns, or recommendations..."></textarea>
         </div>
+      </div>
+
+      <!-- VALIDATION SUMMARY -->
+      <div class="val-summary" id="val-summary">
+        <strong>&#9888; Please complete the following before submitting:</strong>
+        <ul id="val-list"></ul>
       </div>
 
       <!-- SUBMIT -->
@@ -755,13 +816,159 @@
     }
 
     /* =========================
-       VALIDATION
+       WORKSHOP ROW VALIDATION
+    ========================= */
+
+    /**
+     * WS1 — Two panels: Sectors (sector+occupation required) AND Hard-to-Fill (occupation required)
+     */
+    function validateWS1() {
+      const g = id => (document.getElementById(id)?.value.trim() || '');
+
+      // Check hiring sectors panel: need sector + occupation in at least one row
+      let secOk = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws1_sec_s' + i) && g('ws1_sec_o' + i)) { secOk = true; break; }
+      }
+      // Check hard-to-fill panel: need at least one occupation
+      let htfOk = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws1_htf_o' + i)) { htfOk = true; break; }
+      }
+
+      const ok = secOk && htfOk;
+      const errEl = document.getElementById('ws1-err');
+      errEl.classList.toggle('show', !ok);
+
+      // Highlight first sector row if invalid
+      const secRow = document.getElementById('ws1-sec-r1');
+      const htfRow = document.getElementById('ws1-htf-r1');
+      secRow.classList.toggle('prow-invalid', !secOk);
+      htfRow.classList.toggle('prow-invalid', !htfOk);
+
+      updateProgStep(1, ok);
+      return ok;
+    }
+
+    /**
+     * WS2 — Occupation + Demand + Supply all required in at least one row
+     */
+    function validateWS2() {
+      const g = id => (document.getElementById(id)?.value.trim() || '');
+      let ok = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws2_occ' + i) && g('ws2_dem' + i) && g('ws2_sup' + i)) { ok = true; break; }
+      }
+      const errEl = document.getElementById('ws2-err');
+      errEl.classList.toggle('show', !ok);
+      highlightTableRow('ws2-r1', !ok, ['ws2_occ1', 'ws2_dem1', 'ws2_sup1']);
+      updateProgStep(2, ok);
+      return ok;
+    }
+
+    /**
+     * WS3 — Occupation + at least one of technical/soft skills required
+     */
+    function validateWS3() {
+      const g = id => (document.getElementById(id)?.value.trim() || '');
+      let ok = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws3_occ' + i) && (g('ws3_tech' + i) || g('ws3_soft' + i))) { ok = true; break; }
+      }
+      const errEl = document.getElementById('ws3-err');
+      errEl.classList.toggle('show', !ok);
+      highlightTableRow('ws3-r1', !ok, ['ws3_occ1', 'ws3_tech1', 'ws3_soft1']);
+      updateProgStep(3, ok);
+      return ok;
+    }
+
+    /**
+     * WS4 — Skill + Occupation required in at least one row
+     */
+    function validateWS4() {
+      const g = id => (document.getElementById(id)?.value.trim() || '');
+      let ok = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws4_skl' + i) && g('ws4_occ' + i)) { ok = true; break; }
+      }
+      const errEl = document.getElementById('ws4-err');
+      errEl.classList.toggle('show', !ok);
+      highlightTableRow('ws4-r1', !ok, ['ws4_skl1', 'ws4_occ1']);
+      updateProgStep(4, ok);
+      return ok;
+    }
+
+    /**
+     * WS5 — Skill + Program required in at least one row
+     */
+    function validateWS5() {
+      const g = id => (document.getElementById(id)?.value.trim() || '');
+      let ok = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws5_skl' + i) && g('ws5_prg' + i)) { ok = true; break; }
+      }
+      const errEl = document.getElementById('ws5-err');
+      errEl.classList.toggle('show', !ok);
+      highlightTableRow('ws5-r1', !ok, ['ws5_skl1', 'ws5_prg1']);
+      updateProgStep(5, ok);
+      return ok;
+    }
+
+    /**
+     * WS6 — Sector + Commitment required in at least one row
+     */
+    function validateWS6() {
+      const g = id => (document.getElementById(id)?.value.trim() || '');
+      let ok = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws6_sec' + i) && g('ws6_com' + i)) { ok = true; break; }
+      }
+      const errEl = document.getElementById('ws6-err');
+      errEl.classList.toggle('show', !ok);
+      highlightTableRow('ws6-r1', !ok, ['ws6_sec1', 'ws6_com1']);
+      updateProgStep(6, ok);
+      return ok;
+    }
+
+    /**
+     * Visually highlights required cells in the first table row when invalid
+     */
+    function highlightTableRow(rowId, isInvalid, fieldIds) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      fieldIds.forEach(fid => {
+        const el = document.getElementById(fid);
+        if (!el) return;
+        if (isInvalid) {
+          el.style.background = '#FEF2F2';
+          el.style.borderBottom = '2px solid #9B2525';
+        } else {
+          el.style.background = '';
+          el.style.borderBottom = '';
+        }
+      });
+    }
+
+    /**
+     * Updates the progress bar step color
+     */
+    function updateProgStep(wsNum, isValid) {
+      const step = document.getElementById('prog' + wsNum);
+      if (!step) return;
+      step.classList.toggle('ws-ok', isValid);
+      step.classList.toggle('ws-err', !isValid);
+    }
+
+    /* =========================
+       VALIDATION (FULL FORM)
     ========================= */
     function validateForm() {
+      // Basic respondent fields
       const required = ['f-name', 'f-pos', 'f-org', 'f-contact'];
       for (let id of required) {
         if (!document.getElementById(id).value.trim()) {
-          alert('Please complete all required fields.');
+          alert('Please complete all required respondent fields (Name, Position, Organization, Contact).');
+          document.getElementById(id).focus();
           return false;
         }
       }
@@ -769,7 +976,44 @@
         alert('Please select your organization type.');
         return false;
       }
-      return true;
+
+      // Workshop row validations
+      const ws1ok = validateWS1();
+      const ws2ok = validateWS2();
+      const ws3ok = validateWS3();
+      const ws4ok = validateWS4();
+      const ws5ok = validateWS5();
+      const ws6ok = validateWS6();
+
+      const allOk = ws1ok && ws2ok && ws3ok && ws4ok && ws5ok && ws6ok;
+
+      // Build summary
+      const summary = document.getElementById('val-summary');
+      const list = document.getElementById('val-list');
+      if (!allOk) {
+        list.innerHTML = '';
+        const msgs = [
+          [ws1ok, 'Workshop 1 — Fill in at least one hiring sector row and one hard-to-fill occupation'],
+          [ws2ok, 'Workshop 2 — Fill in at least one row with Occupation, Demand Level, and Supply Level'],
+          [ws3ok, 'Workshop 3 — Fill in at least one row with Occupation and a Skills Gap'],
+          [ws4ok, 'Workshop 4 — Fill in at least one row with Skill and Related Occupation'],
+          [ws5ok, 'Workshop 5 — Fill in at least one row with Priority Skill and Proposed Training Program'],
+          [ws6ok, 'Workshop 6 — Fill in at least one row with Sector/Agency and Commitment'],
+        ];
+        msgs.forEach(([ok, msg]) => {
+          if (!ok) {
+            const li = document.createElement('li');
+            li.textContent = msg;
+            list.appendChild(li);
+          }
+        });
+        summary.classList.add('show');
+        summary.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        summary.classList.remove('show');
+      }
+
+      return allOk;
     }
 
     /* =========================
@@ -801,49 +1045,42 @@
         orgType: document.querySelector('.oc.sel .oname')?.textContent || '',
         industryType: document.querySelector('input[name=indt]:checked')?.parentElement.textContent.trim() || '',
 
-        // WS1 Sectors
         ws1_sectors_sector_1: g('ws1_sec_s1'), ws1_sectors_occupation_1: g('ws1_sec_o1'), ws1_sectors_vacancies_1: g('ws1_sec_v1'),
         ws1_sectors_sector_2: g('ws1_sec_s2'), ws1_sectors_occupation_2: g('ws1_sec_o2'), ws1_sectors_vacancies_2: g('ws1_sec_v2'),
         ws1_sectors_sector_3: g('ws1_sec_s3'), ws1_sectors_occupation_3: g('ws1_sec_o3'), ws1_sectors_vacancies_3: g('ws1_sec_v3'),
         ws1_sectors_sector_4: g('ws1_sec_s4'), ws1_sectors_occupation_4: g('ws1_sec_o4'), ws1_sectors_vacancies_4: g('ws1_sec_v4'),
         ws1_sectors_sector_5: g('ws1_sec_s5'), ws1_sectors_occupation_5: g('ws1_sec_o5'), ws1_sectors_vacancies_5: g('ws1_sec_v5'),
 
-        // WS1 Hard-to-Fill
         ws1_hardFill_occupation_1: g('ws1_htf_o1'),
         ws1_hardFill_occupation_2: g('ws1_htf_o2'),
         ws1_hardFill_occupation_3: g('ws1_htf_o3'),
         ws1_hardFill_occupation_4: g('ws1_htf_o4'),
         ws1_hardFill_occupation_5: g('ws1_htf_o5'),
 
-        // WS2
         ws2_occupation_1: g('ws2_occ1'), ws2_demand_1: g('ws2_dem1'), ws2_supply_1: g('ws2_sup1'), ws2_nc_1: g('ws2_nc1'), ws2_remarks_1: g('ws2_rem1'),
         ws2_occupation_2: g('ws2_occ2'), ws2_demand_2: g('ws2_dem2'), ws2_supply_2: g('ws2_sup2'), ws2_nc_2: g('ws2_nc2'), ws2_remarks_2: g('ws2_rem2'),
         ws2_occupation_3: g('ws2_occ3'), ws2_demand_3: g('ws2_dem3'), ws2_supply_3: g('ws2_sup3'), ws2_nc_3: g('ws2_nc3'), ws2_remarks_3: g('ws2_rem3'),
         ws2_occupation_4: g('ws2_occ4'), ws2_demand_4: g('ws2_dem4'), ws2_supply_4: g('ws2_sup4'), ws2_nc_4: g('ws2_nc4'), ws2_remarks_4: g('ws2_rem4'),
         ws2_occupation_5: g('ws2_occ5'), ws2_demand_5: g('ws2_dem5'), ws2_supply_5: g('ws2_sup5'), ws2_nc_5: g('ws2_nc5'), ws2_remarks_5: g('ws2_rem5'),
 
-        // WS3
         ws3_occupation_1: g('ws3_occ1'), ws3_tech_1: g('ws3_tech1'), ws3_soft_1: g('ws3_soft1'), ws3_nc_1: g('ws3_nc1'), ws3_training_1: g('ws3_trn1'),
         ws3_occupation_2: g('ws3_occ2'), ws3_tech_2: g('ws3_tech2'), ws3_soft_2: g('ws3_soft2'), ws3_nc_2: g('ws3_nc2'), ws3_training_2: g('ws3_trn2'),
         ws3_occupation_3: g('ws3_occ3'), ws3_tech_3: g('ws3_tech3'), ws3_soft_3: g('ws3_soft3'), ws3_nc_3: g('ws3_nc3'), ws3_training_3: g('ws3_trn3'),
         ws3_occupation_4: g('ws3_occ4'), ws3_tech_4: g('ws3_tech4'), ws3_soft_4: g('ws3_soft4'), ws3_nc_4: g('ws3_nc4'), ws3_training_4: g('ws3_trn4'),
         ws3_occupation_5: g('ws3_occ5'), ws3_tech_5: g('ws3_tech5'), ws3_soft_5: g('ws3_soft5'), ws3_nc_5: g('ws3_nc5'), ws3_training_5: g('ws3_trn5'),
 
-        // WS4
         ws4_skill_1: g('ws4_skl1'), ws4_occupation_1: g('ws4_occ1'), ws4_vacancies_1: g('ws4_vac1'), ws4_validated_1: g('ws4_val1'), ws4_rank_1: g('ws4_rnk1'),
         ws4_skill_2: g('ws4_skl2'), ws4_occupation_2: g('ws4_occ2'), ws4_vacancies_2: g('ws4_vac2'), ws4_validated_2: g('ws4_val2'), ws4_rank_2: g('ws4_rnk2'),
         ws4_skill_3: g('ws4_skl3'), ws4_occupation_3: g('ws4_occ3'), ws4_vacancies_3: g('ws4_vac3'), ws4_validated_3: g('ws4_val3'), ws4_rank_3: g('ws4_rnk3'),
         ws4_skill_4: g('ws4_skl4'), ws4_occupation_4: g('ws4_occ4'), ws4_vacancies_4: g('ws4_vac4'), ws4_validated_4: g('ws4_val4'), ws4_rank_4: g('ws4_rnk4'),
         ws4_skill_5: g('ws4_skl5'), ws4_occupation_5: g('ws4_occ5'), ws4_vacancies_5: g('ws4_vac5'), ws4_validated_5: g('ws4_val5'), ws4_rank_5: g('ws4_rnk5'),
 
-        // WS5
         ws5_skill_1: g('ws5_skl1'), ws5_program_1: g('ws5_prg1'), ws5_agency_1: g('ws5_agn1'), ws5_beneficiaries_1: g('ws5_ben1'), ws5_timeline_1: g('ws5_tln1'),
         ws5_skill_2: g('ws5_skl2'), ws5_program_2: g('ws5_prg2'), ws5_agency_2: g('ws5_agn2'), ws5_beneficiaries_2: g('ws5_ben2'), ws5_timeline_2: g('ws5_tln2'),
         ws5_skill_3: g('ws5_skl3'), ws5_program_3: g('ws5_prg3'), ws5_agency_3: g('ws5_agn3'), ws5_beneficiaries_3: g('ws5_ben3'), ws5_timeline_3: g('ws5_tln3'),
         ws5_skill_4: g('ws5_skl4'), ws5_program_4: g('ws5_prg4'), ws5_agency_4: g('ws5_agn4'), ws5_beneficiaries_4: g('ws5_ben4'), ws5_timeline_4: g('ws5_tln4'),
         ws5_skill_5: g('ws5_skl5'), ws5_program_5: g('ws5_prg5'), ws5_agency_5: g('ws5_agn5'), ws5_beneficiaries_5: g('ws5_ben5'), ws5_timeline_5: g('ws5_tln5'),
 
-        // WS6
         ws6_sector_1: g('ws6_sec1'), ws6_commitment_1: g('ws6_com1'), ws6_type_1: g('ws6_typ1'), ws6_timeline_1: g('ws6_tln1'), ws6_focal_1: g('ws6_foc1'),
         ws6_sector_2: g('ws6_sec2'), ws6_commitment_2: g('ws6_com2'), ws6_type_2: g('ws6_typ2'), ws6_timeline_2: g('ws6_tln2'), ws6_focal_2: g('ws6_foc2'),
         ws6_sector_3: g('ws6_sec3'), ws6_commitment_3: g('ws6_com3'), ws6_type_3: g('ws6_typ3'), ws6_timeline_3: g('ws6_tln3'), ws6_focal_3: g('ws6_foc3'),
@@ -874,10 +1111,9 @@
     }
 
     /* =========================
-       AUTO SAVE (FIXED)
+       AUTO SAVE
     ========================= */
     function getAllSaveableIds() {
-      // Only save elements with explicit IDs — all fields now have IDs
       return Array.from(document.querySelectorAll('[id]')).filter(el =>
         el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA'
       );
@@ -901,7 +1137,6 @@
         if (saved[el.id] === undefined) return;
         if (el.type === 'radio' || el.type === 'checkbox') {
           el.checked = saved[el.id];
-          // Re-trigger UI state for org selection
           if (el.name === 'org' && el.checked) {
             const oc = el.closest('.oc');
             if (oc) {
@@ -921,9 +1156,7 @@
         }
       });
 
-      // Restore ws-area visibility if org was selected
       if (document.querySelector('.oc.sel') && document.getElementById('ws-area').style.display === 'none') {
-        const indSub = document.getElementById('ind-sub');
         const isInd = document.getElementById('oc-ind')?.classList.contains('sel');
         if (!isInd || document.querySelector('input[name=indt]:checked')) {
           openWS();
