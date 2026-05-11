@@ -163,7 +163,6 @@
     .wsp:hover { background: #F4F7FA }
     .wsp-n { display: block; width: 22px; height: 22px; background: var(--b1); color: #fff; border-radius: 50%; margin: 0 auto 4px; font-size: 11px; font-weight: 700; line-height: 22px }
     .wsp-l { font-size: 10px; color: var(--t3); line-height: 1.3 }
-    /* Progress step states */
     .wsp.ws-ok .wsp-n { background: var(--green) }
     .wsp.ws-err .wsp-n { background: var(--red) }
 
@@ -196,16 +195,6 @@
       line-height: 1.5;
     }
     .ws-error.show { display: block }
-
-    /* Row highlight on error */
-    .row-invalid td input,
-    .row-invalid td select {
-      background: #FEF2F2 !important;
-    }
-    .row-invalid.first-row td input,
-    .row-invalid.first-row td select {
-      border-bottom: 2px solid var(--red);
-    }
 
     /* TABLES */
     .tbl-wrap { overflow-x: auto; margin-top: 4px; border-radius: 5px; border: 1px solid var(--b1) }
@@ -242,12 +231,6 @@
     .prow input { border: none; border-right: 1px solid var(--b2); background: transparent; padding: 8px 9px; font-size: 13px; color: var(--t1); outline: none; font-family: 'Source Sans 3', sans-serif; width: 100% }
     .prow input:last-child { border-right: none }
     .prow input:focus { background: #EDF2FA }
-
-    /* Panel row error highlight */
-    .prow.prow-invalid input { background: #FEF2F2 !important }
-
-    /* ROW NUMBER LABEL */
-    .row-label { font-size: 10px; color: var(--t3); padding: 8px 6px; text-align: center; border-right: 1px solid var(--b2); font-weight: 600; background: #F8F6F2; min-width: 28px }
 
     /* CRITERIA */
     .criteria { font-size: 13px; color: var(--t2); margin-bottom: 14px; padding: 10px 14px; background: var(--gold-pale); border-radius: 5px; border-left: 3px solid var(--gold); line-height: 1.8 }
@@ -412,7 +395,7 @@
 
       <div class="banner">
         <span style="flex-shrink:0">&#10003;</span>
-        <span>Organization: <strong id="banner-org" style="color:var(--gold2)">—</strong>&nbsp;&nbsp;|&nbsp;&nbsp;Scroll down and complete all 6 workshops below. <strong style="color:var(--gold2)">At least one row per workshop is required.</strong></span>
+        <span>Organization: <strong id="banner-org" style="color:var(--gold2)">—</strong>&nbsp;&nbsp;|&nbsp;&nbsp;Scroll down and complete all 6 workshops below. <strong style="color:var(--gold2)">At least one complete row per workshop is required.</strong></span>
       </div>
 
       <div class="ws-prog">
@@ -427,8 +410,8 @@
       <!-- WS 1 -->
       <div class="ws-card" id="ws1">
         <div class="ws-hdr"><span class="ws-badge">Workshop 1 of 6</span>Top Hiring Sectors &amp; Hard-to-Fill Occupations</div>
-        <div class="ws-sub">Fill in your top hiring sectors and the occupations that are hardest to fill. <strong>At least one row is required in each panel.</strong></div>
-        <div class="ws-error" id="ws1-err">Please fill in at least one complete row in <strong>Top 5 Hiring Sectors</strong> (Sector + Occupation) and at least one entry in <strong>Hard-to-Fill Occupations</strong>.</div>
+        <div class="ws-sub">Fill in your top hiring sectors and the occupations that are hardest to fill. <strong>At least one complete row is required in each panel.</strong></div>
+        <div class="ws-error" id="ws1-err">Please fill in at least one complete row in <strong>Top 5 Hiring Sectors</strong> (Sector + Occupation + Vacancies) and at least one entry in <strong>Hard-to-Fill Occupations</strong>.</div>
         <div class="two-col">
 
           <!-- Left panel: Top 5 Hiring Sectors -->
@@ -436,11 +419,11 @@
             <div class="ph2">Top Five (5) Hiring Sectors</div>
             <div class="psub p3"><span>Sector</span><span>Occupation</span><span>Vacancies</span></div>
             <div id="ws1-left">
-              <div class="prow p3" id="ws1-sec-r1"><input type="text" id="ws1_sec_s1" placeholder="e.g. Construction"><input type="text" id="ws1_sec_o1" placeholder="e.g. Welder"><input type="text" id="ws1_sec_v1" placeholder="0"></div>
-              <div class="prow p3"><input type="text" id="ws1_sec_s2" placeholder=""><input type="text" id="ws1_sec_o2" placeholder=""><input type="text" id="ws1_sec_v2" placeholder="0"></div>
-              <div class="prow p3"><input type="text" id="ws1_sec_s3" placeholder=""><input type="text" id="ws1_sec_o3" placeholder=""><input type="text" id="ws1_sec_v3" placeholder="0"></div>
-              <div class="prow p3"><input type="text" id="ws1_sec_s4" placeholder=""><input type="text" id="ws1_sec_o4" placeholder=""><input type="text" id="ws1_sec_v4" placeholder="0"></div>
-              <div class="prow p3"><input type="text" id="ws1_sec_s5" placeholder=""><input type="text" id="ws1_sec_o5" placeholder=""><input type="text" id="ws1_sec_v5" placeholder="0"></div>
+              <div class="prow p3"><input type="text" id="ws1_sec_s1" placeholder="e.g. Construction"><input type="text" id="ws1_sec_o1" placeholder="e.g. Welder"><input type="text" id="ws1_sec_v1" placeholder="e.g. 10"></div>
+              <div class="prow p3"><input type="text" id="ws1_sec_s2"><input type="text" id="ws1_sec_o2"><input type="text" id="ws1_sec_v2"></div>
+              <div class="prow p3"><input type="text" id="ws1_sec_s3"><input type="text" id="ws1_sec_o3"><input type="text" id="ws1_sec_v3"></div>
+              <div class="prow p3"><input type="text" id="ws1_sec_s4"><input type="text" id="ws1_sec_o4"><input type="text" id="ws1_sec_v4"></div>
+              <div class="prow p3"><input type="text" id="ws1_sec_s5"><input type="text" id="ws1_sec_o5"><input type="text" id="ws1_sec_v5"></div>
             </div>
           </div>
 
@@ -449,11 +432,11 @@
             <div class="ph2">Top Five (5) Hard-to-Fill Occupations</div>
             <div class="psub p1"><span>Occupation</span></div>
             <div id="ws1-right">
-              <div class="prow p1" id="ws1-htf-r1"><input type="text" id="ws1_htf_o1" placeholder="e.g. Welder"></div>
-              <div class="prow p1"><input type="text" id="ws1_htf_o2" placeholder="e.g. Electrician"></div>
-              <div class="prow p1"><input type="text" id="ws1_htf_o3" placeholder="e.g. Bookkeeper"></div>
-              <div class="prow p1"><input type="text" id="ws1_htf_o4" placeholder=""></div>
-              <div class="prow p1"><input type="text" id="ws1_htf_o5" placeholder=""></div>
+              <div class="prow p1"><input type="text" id="ws1_htf_o1" placeholder="e.g. Welder"></div>
+              <div class="prow p1"><input type="text" id="ws1_htf_o2"></div>
+              <div class="prow p1"><input type="text" id="ws1_htf_o3"></div>
+              <div class="prow p1"><input type="text" id="ws1_htf_o4"></div>
+              <div class="prow p1"><input type="text" id="ws1_htf_o5"></div>
             </div>
           </div>
 
@@ -477,40 +460,40 @@
               </tr>
             </thead>
             <tbody id="ws2-body">
-              <tr id="ws2-r1">
+              <tr>
                 <td><input type="text" id="ws2_occ1" placeholder="Occupation"></td>
                 <td><select id="ws2_dem1"><option value="">--</option><option>High Demand</option><option>Medium Demand</option><option>Low Demand</option></select></td>
                 <td><select id="ws2_sup1"><option value="">--</option><option>High Supply</option><option>Medium Supply</option><option>Low Supply</option></select></td>
                 <td><select id="ws2_nc1"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws2_rem1" placeholder=""></td>
+                <td><input type="text" id="ws2_rem1"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws2_occ2" placeholder=""></td>
+                <td><input type="text" id="ws2_occ2"></td>
                 <td><select id="ws2_dem2"><option value="">--</option><option>High Demand</option><option>Medium Demand</option><option>Low Demand</option></select></td>
                 <td><select id="ws2_sup2"><option value="">--</option><option>High Supply</option><option>Medium Supply</option><option>Low Supply</option></select></td>
                 <td><select id="ws2_nc2"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws2_rem2" placeholder=""></td>
+                <td><input type="text" id="ws2_rem2"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws2_occ3" placeholder=""></td>
+                <td><input type="text" id="ws2_occ3"></td>
                 <td><select id="ws2_dem3"><option value="">--</option><option>High Demand</option><option>Medium Demand</option><option>Low Demand</option></select></td>
                 <td><select id="ws2_sup3"><option value="">--</option><option>High Supply</option><option>Medium Supply</option><option>Low Supply</option></select></td>
                 <td><select id="ws2_nc3"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws2_rem3" placeholder=""></td>
+                <td><input type="text" id="ws2_rem3"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws2_occ4" placeholder=""></td>
+                <td><input type="text" id="ws2_occ4"></td>
                 <td><select id="ws2_dem4"><option value="">--</option><option>High Demand</option><option>Medium Demand</option><option>Low Demand</option></select></td>
                 <td><select id="ws2_sup4"><option value="">--</option><option>High Supply</option><option>Medium Supply</option><option>Low Supply</option></select></td>
                 <td><select id="ws2_nc4"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws2_rem4" placeholder=""></td>
+                <td><input type="text" id="ws2_rem4"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws2_occ5" placeholder=""></td>
+                <td><input type="text" id="ws2_occ5"></td>
                 <td><select id="ws2_dem5"><option value="">--</option><option>High Demand</option><option>Medium Demand</option><option>Low Demand</option></select></td>
                 <td><select id="ws2_sup5"><option value="">--</option><option>High Supply</option><option>Medium Supply</option><option>Low Supply</option></select></td>
                 <td><select id="ws2_nc5"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws2_rem5" placeholder=""></td>
+                <td><input type="text" id="ws2_rem5"></td>
               </tr>
             </tbody>
           </table>
@@ -534,7 +517,7 @@
               </tr>
             </thead>
             <tbody id="ws3-body">
-              <tr id="ws3-r1">
+              <tr>
                 <td><input type="text" id="ws3_occ1" placeholder="Occupation"></td>
                 <td><input type="text" id="ws3_tech1" placeholder="e.g. CNC operation"></td>
                 <td><input type="text" id="ws3_soft1" placeholder="e.g. Communication"></td>
@@ -542,32 +525,32 @@
                 <td><input type="text" id="ws3_trn1" placeholder="Training program"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws3_occ2" placeholder=""></td>
-                <td><input type="text" id="ws3_tech2" placeholder=""></td>
-                <td><input type="text" id="ws3_soft2" placeholder=""></td>
+                <td><input type="text" id="ws3_occ2"></td>
+                <td><input type="text" id="ws3_tech2"></td>
+                <td><input type="text" id="ws3_soft2"></td>
                 <td><select id="ws3_nc2"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws3_trn2" placeholder=""></td>
+                <td><input type="text" id="ws3_trn2"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws3_occ3" placeholder=""></td>
-                <td><input type="text" id="ws3_tech3" placeholder=""></td>
-                <td><input type="text" id="ws3_soft3" placeholder=""></td>
+                <td><input type="text" id="ws3_occ3"></td>
+                <td><input type="text" id="ws3_tech3"></td>
+                <td><input type="text" id="ws3_soft3"></td>
                 <td><select id="ws3_nc3"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws3_trn3" placeholder=""></td>
+                <td><input type="text" id="ws3_trn3"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws3_occ4" placeholder=""></td>
-                <td><input type="text" id="ws3_tech4" placeholder=""></td>
-                <td><input type="text" id="ws3_soft4" placeholder=""></td>
+                <td><input type="text" id="ws3_occ4"></td>
+                <td><input type="text" id="ws3_tech4"></td>
+                <td><input type="text" id="ws3_soft4"></td>
                 <td><select id="ws3_nc4"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws3_trn4" placeholder=""></td>
+                <td><input type="text" id="ws3_trn4"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws3_occ5" placeholder=""></td>
-                <td><input type="text" id="ws3_tech5" placeholder=""></td>
-                <td><input type="text" id="ws3_soft5" placeholder=""></td>
+                <td><input type="text" id="ws3_occ5"></td>
+                <td><input type="text" id="ws3_tech5"></td>
+                <td><input type="text" id="ws3_soft5"></td>
                 <td><select id="ws3_nc5"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws3_trn5" placeholder=""></td>
+                <td><input type="text" id="ws3_trn5"></td>
               </tr>
             </tbody>
           </table>
@@ -591,40 +574,40 @@
               </tr>
             </thead>
             <tbody id="ws4-body">
-              <tr id="ws4-r1">
+              <tr>
                 <td><input type="text" id="ws4_skl1" placeholder="Skill name"></td>
                 <td><input type="text" id="ws4_occ1" placeholder="Occupation"></td>
-                <td><input type="text" id="ws4_vac1" placeholder="0"></td>
+                <td><input type="text" id="ws4_vac1"></td>
                 <td><select id="ws4_val1"><option value="">--</option><option>Yes</option><option>No</option></select></td>
                 <td><input type="text" id="ws4_rnk1" placeholder="1–5"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws4_skl2" placeholder=""></td>
-                <td><input type="text" id="ws4_occ2" placeholder=""></td>
-                <td><input type="text" id="ws4_vac2" placeholder="0"></td>
+                <td><input type="text" id="ws4_skl2"></td>
+                <td><input type="text" id="ws4_occ2"></td>
+                <td><input type="text" id="ws4_vac2"></td>
                 <td><select id="ws4_val2"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws4_rnk2" placeholder=""></td>
+                <td><input type="text" id="ws4_rnk2"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws4_skl3" placeholder=""></td>
-                <td><input type="text" id="ws4_occ3" placeholder=""></td>
-                <td><input type="text" id="ws4_vac3" placeholder="0"></td>
+                <td><input type="text" id="ws4_skl3"></td>
+                <td><input type="text" id="ws4_occ3"></td>
+                <td><input type="text" id="ws4_vac3"></td>
                 <td><select id="ws4_val3"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws4_rnk3" placeholder=""></td>
+                <td><input type="text" id="ws4_rnk3"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws4_skl4" placeholder=""></td>
-                <td><input type="text" id="ws4_occ4" placeholder=""></td>
-                <td><input type="text" id="ws4_vac4" placeholder="0"></td>
+                <td><input type="text" id="ws4_skl4"></td>
+                <td><input type="text" id="ws4_occ4"></td>
+                <td><input type="text" id="ws4_vac4"></td>
                 <td><select id="ws4_val4"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws4_rnk4" placeholder=""></td>
+                <td><input type="text" id="ws4_rnk4"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws4_skl5" placeholder=""></td>
-                <td><input type="text" id="ws4_occ5" placeholder=""></td>
-                <td><input type="text" id="ws4_vac5" placeholder="0"></td>
+                <td><input type="text" id="ws4_skl5"></td>
+                <td><input type="text" id="ws4_occ5"></td>
+                <td><input type="text" id="ws4_vac5"></td>
                 <td><select id="ws4_val5"><option value="">--</option><option>Yes</option><option>No</option></select></td>
-                <td><input type="text" id="ws4_rnk5" placeholder=""></td>
+                <td><input type="text" id="ws4_rnk5"></td>
               </tr>
             </tbody>
           </table>
@@ -648,7 +631,7 @@
               </tr>
             </thead>
             <tbody id="ws5-body">
-              <tr id="ws5-r1">
+              <tr>
                 <td><input type="text" id="ws5_skl1" placeholder="Skill"></td>
                 <td><input type="text" id="ws5_prg1" placeholder="Program name"></td>
                 <td><input type="text" id="ws5_agn1" placeholder="e.g. TESDA"></td>
@@ -656,32 +639,32 @@
                 <td><input type="text" id="ws5_tln1" placeholder="e.g. Q3 2025"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws5_skl2" placeholder=""></td>
-                <td><input type="text" id="ws5_prg2" placeholder=""></td>
-                <td><input type="text" id="ws5_agn2" placeholder=""></td>
-                <td><input type="text" id="ws5_ben2" placeholder=""></td>
-                <td><input type="text" id="ws5_tln2" placeholder=""></td>
+                <td><input type="text" id="ws5_skl2"></td>
+                <td><input type="text" id="ws5_prg2"></td>
+                <td><input type="text" id="ws5_agn2"></td>
+                <td><input type="text" id="ws5_ben2"></td>
+                <td><input type="text" id="ws5_tln2"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws5_skl3" placeholder=""></td>
-                <td><input type="text" id="ws5_prg3" placeholder=""></td>
-                <td><input type="text" id="ws5_agn3" placeholder=""></td>
-                <td><input type="text" id="ws5_ben3" placeholder=""></td>
-                <td><input type="text" id="ws5_tln3" placeholder=""></td>
+                <td><input type="text" id="ws5_skl3"></td>
+                <td><input type="text" id="ws5_prg3"></td>
+                <td><input type="text" id="ws5_agn3"></td>
+                <td><input type="text" id="ws5_ben3"></td>
+                <td><input type="text" id="ws5_tln3"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws5_skl4" placeholder=""></td>
-                <td><input type="text" id="ws5_prg4" placeholder=""></td>
-                <td><input type="text" id="ws5_agn4" placeholder=""></td>
-                <td><input type="text" id="ws5_ben4" placeholder=""></td>
-                <td><input type="text" id="ws5_tln4" placeholder=""></td>
+                <td><input type="text" id="ws5_skl4"></td>
+                <td><input type="text" id="ws5_prg4"></td>
+                <td><input type="text" id="ws5_agn4"></td>
+                <td><input type="text" id="ws5_ben4"></td>
+                <td><input type="text" id="ws5_tln4"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws5_skl5" placeholder=""></td>
-                <td><input type="text" id="ws5_prg5" placeholder=""></td>
-                <td><input type="text" id="ws5_agn5" placeholder=""></td>
-                <td><input type="text" id="ws5_ben5" placeholder=""></td>
-                <td><input type="text" id="ws5_tln5" placeholder=""></td>
+                <td><input type="text" id="ws5_skl5"></td>
+                <td><input type="text" id="ws5_prg5"></td>
+                <td><input type="text" id="ws5_agn5"></td>
+                <td><input type="text" id="ws5_ben5"></td>
+                <td><input type="text" id="ws5_tln5"></td>
               </tr>
             </tbody>
           </table>
@@ -705,7 +688,7 @@
               </tr>
             </thead>
             <tbody id="ws6-body">
-              <tr id="ws6-r1">
+              <tr>
                 <td><input type="text" id="ws6_sec1" placeholder="e.g. Tourism sector"></td>
                 <td><input type="text" id="ws6_com1" placeholder="e.g. Provide 20 OJT slots"></td>
                 <td><select id="ws6_typ1"><option value="">--</option><option>Training</option><option>Hiring</option><option>Data Sharing</option><option>Immersion</option></select></td>
@@ -713,32 +696,32 @@
                 <td><input type="text" id="ws6_foc1" placeholder="Name &amp; contact"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws6_sec2" placeholder=""></td>
-                <td><input type="text" id="ws6_com2" placeholder=""></td>
+                <td><input type="text" id="ws6_sec2"></td>
+                <td><input type="text" id="ws6_com2"></td>
                 <td><select id="ws6_typ2"><option value="">--</option><option>Training</option><option>Hiring</option><option>Data Sharing</option><option>Immersion</option></select></td>
-                <td><input type="text" id="ws6_tln2" placeholder=""></td>
-                <td><input type="text" id="ws6_foc2" placeholder=""></td>
+                <td><input type="text" id="ws6_tln2"></td>
+                <td><input type="text" id="ws6_foc2"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws6_sec3" placeholder=""></td>
-                <td><input type="text" id="ws6_com3" placeholder=""></td>
+                <td><input type="text" id="ws6_sec3"></td>
+                <td><input type="text" id="ws6_com3"></td>
                 <td><select id="ws6_typ3"><option value="">--</option><option>Training</option><option>Hiring</option><option>Data Sharing</option><option>Immersion</option></select></td>
-                <td><input type="text" id="ws6_tln3" placeholder=""></td>
-                <td><input type="text" id="ws6_foc3" placeholder=""></td>
+                <td><input type="text" id="ws6_tln3"></td>
+                <td><input type="text" id="ws6_foc3"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws6_sec4" placeholder=""></td>
-                <td><input type="text" id="ws6_com4" placeholder=""></td>
+                <td><input type="text" id="ws6_sec4"></td>
+                <td><input type="text" id="ws6_com4"></td>
                 <td><select id="ws6_typ4"><option value="">--</option><option>Training</option><option>Hiring</option><option>Data Sharing</option><option>Immersion</option></select></td>
-                <td><input type="text" id="ws6_tln4" placeholder=""></td>
-                <td><input type="text" id="ws6_foc4" placeholder=""></td>
+                <td><input type="text" id="ws6_tln4"></td>
+                <td><input type="text" id="ws6_foc4"></td>
               </tr>
               <tr>
-                <td><input type="text" id="ws6_sec5" placeholder=""></td>
-                <td><input type="text" id="ws6_com5" placeholder=""></td>
+                <td><input type="text" id="ws6_sec5"></td>
+                <td><input type="text" id="ws6_com5"></td>
                 <td><select id="ws6_typ5"><option value="">--</option><option>Training</option><option>Hiring</option><option>Data Sharing</option><option>Immersion</option></select></td>
-                <td><input type="text" id="ws6_tln5" placeholder=""></td>
-                <td><input type="text" id="ws6_foc5" placeholder=""></td>
+                <td><input type="text" id="ws6_tln5"></td>
+                <td><input type="text" id="ws6_foc5"></td>
               </tr>
             </tbody>
           </table>
@@ -816,143 +799,13 @@
     }
 
     /* =========================
-       WORKSHOP ROW VALIDATION
+       VALUE GETTER — no N/A stripping
     ========================= */
+    const g = id => (document.getElementById(id)?.value || '').trim();
 
-    /**
-     * WS1 — Two panels: Sectors (sector+occupation required) AND Hard-to-Fill (occupation required)
-     * Highlights EVERY empty required field across all rows until at least one full row is complete.
-     */
-    function validateWS1() {
-      // Strip N/A variants (N/A, n/a, NA, na) — save as empty string to DB
-      const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
-
-      // Sectors panel
-      let secOk = false;
-      for (let i = 1; i <= 5; i++) {
-        if (g('ws1_sec_s' + i) && g('ws1_sec_o' + i)) { secOk = true; break; }
-      }
-      // Hard-to-fill panel
-      let htfOk = false;
-      for (let i = 1; i <= 5; i++) {
-        if (g('ws1_htf_o' + i)) { htfOk = true; break; }
-      }
-
-      // Highlight sector fields: mark empty required cells red across all rows when panel is invalid
-      for (let i = 1; i <= 5; i++) {
-        const hasAnything = g('ws1_sec_s' + i) || g('ws1_sec_o' + i);
-        // If panel still invalid, mark all incomplete rows' required fields
-        markField(document.getElementById('ws1_sec_s' + i), !secOk && !g('ws1_sec_s' + i));
-        markField(document.getElementById('ws1_sec_o' + i), !secOk && !g('ws1_sec_o' + i));
-      }
-      // Highlight htf fields
-      for (let i = 1; i <= 5; i++) {
-        markField(document.getElementById('ws1_htf_o' + i), !htfOk && !g('ws1_htf_o' + i));
-      }
-
-      const ok = secOk && htfOk;
-      document.getElementById('ws1-err').classList.toggle('show', !ok);
-      updateProgStep(1, ok);
-      return ok;
-    }
-
-    /**
-     * WS2 — Occupation + Demand + Supply all required in at least one row.
-     * Marks empty required fields red in every row that is partially/fully blank.
-     */
-    function validateWS2() {
-      const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
-      // All 5 columns required in at least one row
-      let ok = false;
-      for (let i = 1; i <= 5; i++) {
-        if (g('ws2_occ'+i) && g('ws2_dem'+i) && g('ws2_sup'+i) && g('ws2_nc'+i) && g('ws2_rem'+i)) { ok = true; break; }
-      }
-      for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws2_occ'+i) || g('ws2_dem'+i) || g('ws2_sup'+i) || g('ws2_nc'+i) || g('ws2_rem'+i);
-        const mark = !ok && (i === 1 || rowHasData);
-        ['ws2_occ','ws2_dem','ws2_sup','ws2_nc','ws2_rem'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
-        if (ok || !mark) ['ws2_occ','ws2_dem','ws2_sup','ws2_nc','ws2_rem'].forEach(f => markField(document.getElementById(f+i), false));
-      }
-      document.getElementById('ws2-err').classList.toggle('show', !ok);
-      updateProgStep(2, ok);
-      return ok;
-    }
-
-    function validateWS3() {
-      const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
-      // All 5 columns required in at least one row
-      let ok = false;
-      for (let i = 1; i <= 5; i++) {
-        if (g('ws3_occ'+i) && g('ws3_tech'+i) && g('ws3_soft'+i) && g('ws3_nc'+i) && g('ws3_trn'+i)) { ok = true; break; }
-      }
-      for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws3_occ'+i) || g('ws3_tech'+i) || g('ws3_soft'+i) || g('ws3_nc'+i) || g('ws3_trn'+i);
-        const mark = !ok && (i === 1 || rowHasData);
-        ['ws3_occ','ws3_tech','ws3_soft','ws3_nc','ws3_trn'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
-        if (ok || !mark) ['ws3_occ','ws3_tech','ws3_soft','ws3_nc','ws3_trn'].forEach(f => markField(document.getElementById(f+i), false));
-      }
-      document.getElementById('ws3-err').classList.toggle('show', !ok);
-      updateProgStep(3, ok);
-      return ok;
-    }
-
-    function validateWS4() {
-      const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
-      // All 5 columns required in at least one row
-      let ok = false;
-      for (let i = 1; i <= 5; i++) {
-        if (g('ws4_skl'+i) && g('ws4_occ'+i) && g('ws4_vac'+i) && g('ws4_val'+i) && g('ws4_rnk'+i)) { ok = true; break; }
-      }
-      for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws4_skl'+i) || g('ws4_occ'+i) || g('ws4_vac'+i) || g('ws4_val'+i) || g('ws4_rnk'+i);
-        const mark = !ok && (i === 1 || rowHasData);
-        ['ws4_skl','ws4_occ','ws4_vac','ws4_val','ws4_rnk'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
-        if (ok || !mark) ['ws4_skl','ws4_occ','ws4_vac','ws4_val','ws4_rnk'].forEach(f => markField(document.getElementById(f+i), false));
-      }
-      document.getElementById('ws4-err').classList.toggle('show', !ok);
-      updateProgStep(4, ok);
-      return ok;
-    }
-
-    function validateWS5() {
-      const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
-      // All 5 columns required in at least one row
-      let ok = false;
-      for (let i = 1; i <= 5; i++) {
-        if (g('ws5_skl'+i) && g('ws5_prg'+i) && g('ws5_agn'+i) && g('ws5_ben'+i) && g('ws5_tln'+i)) { ok = true; break; }
-      }
-      for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws5_skl'+i) || g('ws5_prg'+i) || g('ws5_agn'+i) || g('ws5_ben'+i) || g('ws5_tln'+i);
-        const mark = !ok && (i === 1 || rowHasData);
-        ['ws5_skl','ws5_prg','ws5_agn','ws5_ben','ws5_tln'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
-        if (ok || !mark) ['ws5_skl','ws5_prg','ws5_agn','ws5_ben','ws5_tln'].forEach(f => markField(document.getElementById(f+i), false));
-      }
-      document.getElementById('ws5-err').classList.toggle('show', !ok);
-      updateProgStep(5, ok);
-      return ok;
-    }
-
-    function validateWS6() {
-      const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
-      // All 5 columns required in at least one row
-      let ok = false;
-      for (let i = 1; i <= 5; i++) {
-        if (g('ws6_sec'+i) && g('ws6_com'+i) && g('ws6_typ'+i) && g('ws6_tln'+i) && g('ws6_foc'+i)) { ok = true; break; }
-      }
-      for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws6_sec'+i) || g('ws6_com'+i) || g('ws6_typ'+i) || g('ws6_tln'+i) || g('ws6_foc'+i);
-        const mark = !ok && (i === 1 || rowHasData);
-        ['ws6_sec','ws6_com','ws6_typ','ws6_tln','ws6_foc'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
-        if (ok || !mark) ['ws6_sec','ws6_com','ws6_typ','ws6_tln','ws6_foc'].forEach(f => markField(document.getElementById(f+i), false));
-      }
-      document.getElementById('ws6-err').classList.toggle('show', !ok);
-      updateProgStep(6, ok);
-      return ok;
-    }
-
-    /**
-     * Mark a single field element as invalid or valid
-     */
+    /* =========================
+       FIELD HIGHLIGHT HELPER
+    ========================= */
     function markField(el, invalid) {
       if (!el) return;
       const td = el.closest('td') || el.closest('.prow');
@@ -980,22 +833,9 @@
       }
     }
 
-    /**
-     * Visually highlights specific required fields across ALL 5 rows when invalid.
-     * Fields in rows that DO have data are cleared; fields in ALL rows are marked
-     * if no valid row exists yet.
-     */
-    function highlightTableRow(rowId, isInvalid, fieldIds) {
-      // For simple single-row highlight (legacy call style)
-      fieldIds.forEach(fid => {
-        const el = document.getElementById(fid);
-        markField(el, isInvalid);
-      });
-    }
-
-    /**
-     * Updates the progress bar step color
-     */
+    /* =========================
+       PROGRESS BAR
+    ========================= */
     function updateProgStep(wsNum, isValid) {
       const step = document.getElementById('prog' + wsNum);
       if (!step) return;
@@ -1004,10 +844,85 @@
     }
 
     /* =========================
-       VALIDATION (FULL FORM)
+       WS1 VALIDATION
+       Sectors: sector + occupation + vacancies all required for a complete row
+       Hard-to-fill: occupation required for at least one entry
+    ========================= */
+    function validateWS1() {
+      // Check if at least one complete sector row exists (all 3 fields filled)
+      let secOk = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws1_sec_s' + i) && g('ws1_sec_o' + i) && g('ws1_sec_v' + i)) {
+          secOk = true;
+          break;
+        }
+      }
+
+      // Check if at least one hard-to-fill entry exists
+      let htfOk = false;
+      for (let i = 1; i <= 5; i++) {
+        if (g('ws1_htf_o' + i)) { htfOk = true; break; }
+      }
+
+      // Highlight sector panel: mark empty required cells in any row that is incomplete
+      // when no valid row exists yet
+      for (let i = 1; i <= 5; i++) {
+        const rowHasData = g('ws1_sec_s' + i) || g('ws1_sec_o' + i) || g('ws1_sec_v' + i);
+        const shouldMark = !secOk && (i === 1 || rowHasData);
+        markField(document.getElementById('ws1_sec_s' + i), shouldMark && !g('ws1_sec_s' + i));
+        markField(document.getElementById('ws1_sec_o' + i), shouldMark && !g('ws1_sec_o' + i));
+        markField(document.getElementById('ws1_sec_v' + i), shouldMark && !g('ws1_sec_v' + i));
+        if (!shouldMark || secOk) {
+          markField(document.getElementById('ws1_sec_s' + i), false);
+          markField(document.getElementById('ws1_sec_o' + i), false);
+          markField(document.getElementById('ws1_sec_v' + i), false);
+        }
+      }
+
+      // Highlight hard-to-fill panel
+      for (let i = 1; i <= 5; i++) {
+        markField(document.getElementById('ws1_htf_o' + i), !htfOk && i === 1 && !g('ws1_htf_o' + i));
+      }
+
+      const ok = secOk && htfOk;
+      document.getElementById('ws1-err').classList.toggle('show', !ok);
+      updateProgStep(1, ok);
+      return ok;
+    }
+
+    /* =========================
+       WS2–WS6 VALIDATION (generic)
+       At least one complete row; mark empty fields only in rows that have any data
+       (plus always mark row 1 if nothing is valid yet)
+    ========================= */
+    function validateWSTable(wsNum, fields) {
+      let ok = false;
+      for (let i = 1; i <= 5; i++) {
+        if (fields.every(f => g(f + i))) { ok = true; break; }
+      }
+      for (let i = 1; i <= 5; i++) {
+        const rowHasData = fields.some(f => g(f + i));
+        const shouldMark = !ok && (i === 1 || rowHasData);
+        fields.forEach(f => {
+          markField(document.getElementById(f + i), shouldMark && !g(f + i));
+          if (!shouldMark || ok) markField(document.getElementById(f + i), false);
+        });
+      }
+      document.getElementById('ws' + wsNum + '-err').classList.toggle('show', !ok);
+      updateProgStep(wsNum, ok);
+      return ok;
+    }
+
+    function validateWS2() { return validateWSTable(2, ['ws2_occ','ws2_dem','ws2_sup','ws2_nc','ws2_rem']); }
+    function validateWS3() { return validateWSTable(3, ['ws3_occ','ws3_tech','ws3_soft','ws3_nc','ws3_trn']); }
+    function validateWS4() { return validateWSTable(4, ['ws4_skl','ws4_occ','ws4_vac','ws4_val','ws4_rnk']); }
+    function validateWS5() { return validateWSTable(5, ['ws5_skl','ws5_prg','ws5_agn','ws5_ben','ws5_tln']); }
+    function validateWS6() { return validateWSTable(6, ['ws6_sec','ws6_com','ws6_typ','ws6_tln','ws6_foc']); }
+
+    /* =========================
+       FULL FORM VALIDATION
     ========================= */
     function validateForm() {
-      // Basic respondent fields
       const required = ['f-name', 'f-pos', 'f-org', 'f-contact'];
       for (let id of required) {
         if (!document.getElementById(id).value.trim()) {
@@ -1021,7 +936,6 @@
         return false;
       }
 
-      // Workshop row validations
       const ws1ok = validateWS1();
       const ws2ok = validateWS2();
       const ws3ok = validateWS3();
@@ -1031,20 +945,18 @@
 
       const allOk = ws1ok && ws2ok && ws3ok && ws4ok && ws5ok && ws6ok;
 
-      // Build summary
       const summary = document.getElementById('val-summary');
       const list = document.getElementById('val-list');
       if (!allOk) {
         list.innerHTML = '';
-        const msgs = [
-          [ws1ok, 'Workshop 1 — Fill in at least one hiring sector row and one hard-to-fill occupation'],
+        [
+          [ws1ok, 'Workshop 1 — Fill in at least one complete hiring sector row (Sector + Occupation + Vacancies) and one hard-to-fill occupation'],
           [ws2ok, 'Workshop 2 — Fill in at least one complete row (all 5 columns required)'],
           [ws3ok, 'Workshop 3 — Fill in at least one complete row (all 5 columns required)'],
           [ws4ok, 'Workshop 4 — Fill in at least one complete row (all 5 columns required)'],
           [ws5ok, 'Workshop 5 — Fill in at least one complete row (all 5 columns required)'],
           [ws6ok, 'Workshop 6 — Fill in at least one complete row (all 5 columns required)'],
-        ];
-        msgs.forEach(([ok, msg]) => {
+        ].forEach(([ok, msg]) => {
           if (!ok) {
             const li = document.createElement('li');
             li.textContent = msg;
@@ -1077,8 +989,6 @@
       btn.disabled = true;
       spin.style.display = 'block';
       statusEl.textContent = '';
-
-      const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
 
       const payload = {
         timestamp: new Date().toISOString(),
