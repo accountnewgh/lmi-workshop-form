@@ -464,7 +464,7 @@
       <div class="ws-card" id="ws2">
         <div class="ws-hdr"><span class="ws-badge">Workshop 2 of 6</span>Supply vs. Demand Matching Matrix</div>
         <div class="ws-sub">Top 5 occupations — rate demand and supply level for each. <strong>At least one complete row is required.</strong></div>
-        <div class="ws-error" id="ws2-err">Please fill in at least one complete row: Occupation, Demand Level, and Supply Level are required.</div>
+        <div class="ws-error" id="ws2-err">Please fill in at least one complete row: all columns (Occupation, Demand Level, Supply Level, NC Required, and Remarks) are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -521,7 +521,7 @@
       <div class="ws-card" id="ws3">
         <div class="ws-hdr"><span class="ws-badge">Workshop 3 of 6</span>Skills Gap Identification</div>
         <div class="ws-sub">Identify technical and soft skills gaps for each occupation. <strong>At least one complete row is required.</strong></div>
-        <div class="ws-error" id="ws3-err">Please fill in at least one complete row: Occupation and at least one Skills Gap field are required.</div>
+        <div class="ws-error" id="ws3-err">Please fill in at least one complete row: all columns (Occupation, Technical Skills Gap, Soft Skills Gap, NC Required, and Training Needed) are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -578,7 +578,7 @@
       <div class="ws-card" id="ws4">
         <div class="ws-hdr"><span class="ws-badge">Workshop 4 of 6</span>Priority Skills Ranking</div>
         <div class="criteria"><strong>Criteria:</strong> With actual job vacancies &nbsp;·&nbsp; With employer validation &nbsp;·&nbsp; Trainable within 3–6 months &nbsp;·&nbsp; With high employment potential</div>
-        <div class="ws-error" id="ws4-err">Please fill in at least one complete row: Skill name and Related Occupation are required.</div>
+        <div class="ws-error" id="ws4-err">Please fill in at least one complete row: all columns (Skill, Occupation, Vacancies, Industry Validated, and Priority Rank) are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -635,7 +635,7 @@
       <div class="ws-card" id="ws5">
         <div class="ws-hdr"><span class="ws-badge">Workshop 5 of 6</span>Intervention &amp; Program Mapping</div>
         <div class="ws-sub">Propose training programs and interventions for each priority skill. <strong>At least one complete row is required.</strong></div>
-        <div class="ws-error" id="ws5-err">Please fill in at least one complete row: Priority Skill and Proposed Training Program are required.</div>
+        <div class="ws-error" id="ws5-err">Please fill in at least one complete row: all columns (Priority Skill, Training Program, Lead Agency, Target Beneficiaries, and Timeline) are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -692,7 +692,7 @@
       <div class="ws-card" id="ws6">
         <div class="ws-hdr"><span class="ws-badge">Workshop 6 of 6</span>Industry–Academe–Government Commitments</div>
         <div class="ws-sub">State your organization's formal commitments to support the Provincial LMI Action Plan. <strong>At least one complete row is required.</strong></div>
-        <div class="ws-error" id="ws6-err">Please fill in at least one complete row: Sector/Agency and Commitment are required.</div>
+        <div class="ws-error" id="ws6-err">Please fill in at least one complete row: all columns (Sector/Agency, Commitment, Type, Timeline, and Focal Person) are required.</div>
         <div class="tbl-wrap">
           <table class="tbl">
             <thead>
@@ -862,124 +862,88 @@
      */
     function validateWS2() {
       const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
+      // All 5 columns required in at least one row
       let ok = false;
       for (let i = 1; i <= 5; i++) {
-        if (g('ws2_occ' + i) && g('ws2_dem' + i) && g('ws2_sup' + i)) { ok = true; break; }
+        if (g('ws2_occ'+i) && g('ws2_dem'+i) && g('ws2_sup'+i) && g('ws2_nc'+i) && g('ws2_rem'+i)) { ok = true; break; }
       }
       for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws2_occ' + i) || g('ws2_dem' + i) || g('ws2_sup' + i);
-        if (!ok) {
-          // Mark all empty required fields on rows that have partial data OR the first row
-          const forceFirst = i === 1;
-          const mark = forceFirst || rowHasData;
-          markField(document.getElementById('ws2_occ' + i), mark && !g('ws2_occ' + i));
-          markField(document.getElementById('ws2_dem' + i), mark && !g('ws2_dem' + i));
-          markField(document.getElementById('ws2_sup' + i), mark && !g('ws2_sup' + i));
-        } else {
-          markField(document.getElementById('ws2_occ' + i), false);
-          markField(document.getElementById('ws2_dem' + i), false);
-          markField(document.getElementById('ws2_sup' + i), false);
-        }
+        const rowHasData = g('ws2_occ'+i) || g('ws2_dem'+i) || g('ws2_sup'+i) || g('ws2_nc'+i) || g('ws2_rem'+i);
+        const mark = !ok && (i === 1 || rowHasData);
+        ['ws2_occ','ws2_dem','ws2_sup','ws2_nc','ws2_rem'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
+        if (ok || !mark) ['ws2_occ','ws2_dem','ws2_sup','ws2_nc','ws2_rem'].forEach(f => markField(document.getElementById(f+i), false));
       }
       document.getElementById('ws2-err').classList.toggle('show', !ok);
       updateProgStep(2, ok);
       return ok;
     }
 
-    /**
-     * WS3 — Occupation + at least one of technical/soft skills required.
-     */
     function validateWS3() {
       const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
+      // All 5 columns required in at least one row
       let ok = false;
       for (let i = 1; i <= 5; i++) {
-        if (g('ws3_occ' + i) && (g('ws3_tech' + i) || g('ws3_soft' + i))) { ok = true; break; }
+        if (g('ws3_occ'+i) && g('ws3_tech'+i) && g('ws3_soft'+i) && g('ws3_nc'+i) && g('ws3_trn'+i)) { ok = true; break; }
       }
       for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws3_occ' + i) || g('ws3_tech' + i) || g('ws3_soft' + i);
+        const rowHasData = g('ws3_occ'+i) || g('ws3_tech'+i) || g('ws3_soft'+i) || g('ws3_nc'+i) || g('ws3_trn'+i);
         const mark = !ok && (i === 1 || rowHasData);
-        markField(document.getElementById('ws3_occ' + i), mark && !g('ws3_occ' + i));
-        // For skills gap: mark both if both are empty (need at least one)
-        const noSkill = !g('ws3_tech' + i) && !g('ws3_soft' + i);
-        markField(document.getElementById('ws3_tech' + i), mark && noSkill);
-        markField(document.getElementById('ws3_soft' + i), mark && noSkill);
-        if (ok || !mark) {
-          markField(document.getElementById('ws3_occ' + i), false);
-          markField(document.getElementById('ws3_tech' + i), false);
-          markField(document.getElementById('ws3_soft' + i), false);
-        }
+        ['ws3_occ','ws3_tech','ws3_soft','ws3_nc','ws3_trn'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
+        if (ok || !mark) ['ws3_occ','ws3_tech','ws3_soft','ws3_nc','ws3_trn'].forEach(f => markField(document.getElementById(f+i), false));
       }
       document.getElementById('ws3-err').classList.toggle('show', !ok);
       updateProgStep(3, ok);
       return ok;
     }
 
-    /**
-     * WS4 — Skill + Occupation required in at least one row.
-     */
     function validateWS4() {
       const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
+      // All 5 columns required in at least one row
       let ok = false;
       for (let i = 1; i <= 5; i++) {
-        if (g('ws4_skl' + i) && g('ws4_occ' + i)) { ok = true; break; }
+        if (g('ws4_skl'+i) && g('ws4_occ'+i) && g('ws4_vac'+i) && g('ws4_val'+i) && g('ws4_rnk'+i)) { ok = true; break; }
       }
       for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws4_skl' + i) || g('ws4_occ' + i);
+        const rowHasData = g('ws4_skl'+i) || g('ws4_occ'+i) || g('ws4_vac'+i) || g('ws4_val'+i) || g('ws4_rnk'+i);
         const mark = !ok && (i === 1 || rowHasData);
-        markField(document.getElementById('ws4_skl' + i), mark && !g('ws4_skl' + i));
-        markField(document.getElementById('ws4_occ' + i), mark && !g('ws4_occ' + i));
-        if (ok || !mark) {
-          markField(document.getElementById('ws4_skl' + i), false);
-          markField(document.getElementById('ws4_occ' + i), false);
-        }
+        ['ws4_skl','ws4_occ','ws4_vac','ws4_val','ws4_rnk'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
+        if (ok || !mark) ['ws4_skl','ws4_occ','ws4_vac','ws4_val','ws4_rnk'].forEach(f => markField(document.getElementById(f+i), false));
       }
       document.getElementById('ws4-err').classList.toggle('show', !ok);
       updateProgStep(4, ok);
       return ok;
     }
 
-    /**
-     * WS5 — Skill + Program required in at least one row.
-     */
     function validateWS5() {
       const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
+      // All 5 columns required in at least one row
       let ok = false;
       for (let i = 1; i <= 5; i++) {
-        if (g('ws5_skl' + i) && g('ws5_prg' + i)) { ok = true; break; }
+        if (g('ws5_skl'+i) && g('ws5_prg'+i) && g('ws5_agn'+i) && g('ws5_ben'+i) && g('ws5_tln'+i)) { ok = true; break; }
       }
       for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws5_skl' + i) || g('ws5_prg' + i);
+        const rowHasData = g('ws5_skl'+i) || g('ws5_prg'+i) || g('ws5_agn'+i) || g('ws5_ben'+i) || g('ws5_tln'+i);
         const mark = !ok && (i === 1 || rowHasData);
-        markField(document.getElementById('ws5_skl' + i), mark && !g('ws5_skl' + i));
-        markField(document.getElementById('ws5_prg' + i), mark && !g('ws5_prg' + i));
-        if (ok || !mark) {
-          markField(document.getElementById('ws5_skl' + i), false);
-          markField(document.getElementById('ws5_prg' + i), false);
-        }
+        ['ws5_skl','ws5_prg','ws5_agn','ws5_ben','ws5_tln'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
+        if (ok || !mark) ['ws5_skl','ws5_prg','ws5_agn','ws5_ben','ws5_tln'].forEach(f => markField(document.getElementById(f+i), false));
       }
       document.getElementById('ws5-err').classList.toggle('show', !ok);
       updateProgStep(5, ok);
       return ok;
     }
 
-    /**
-     * WS6 — Sector + Commitment required in at least one row.
-     */
     function validateWS6() {
       const g = id => { const v = (document.getElementById(id)?.value || '').trim(); return /^n\/?a$/i.test(v) ? '' : v; };
+      // All 5 columns required in at least one row
       let ok = false;
       for (let i = 1; i <= 5; i++) {
-        if (g('ws6_sec' + i) && g('ws6_com' + i)) { ok = true; break; }
+        if (g('ws6_sec'+i) && g('ws6_com'+i) && g('ws6_typ'+i) && g('ws6_tln'+i) && g('ws6_foc'+i)) { ok = true; break; }
       }
       for (let i = 1; i <= 5; i++) {
-        const rowHasData = g('ws6_sec' + i) || g('ws6_com' + i);
+        const rowHasData = g('ws6_sec'+i) || g('ws6_com'+i) || g('ws6_typ'+i) || g('ws6_tln'+i) || g('ws6_foc'+i);
         const mark = !ok && (i === 1 || rowHasData);
-        markField(document.getElementById('ws6_sec' + i), mark && !g('ws6_sec' + i));
-        markField(document.getElementById('ws6_com' + i), mark && !g('ws6_com' + i));
-        if (ok || !mark) {
-          markField(document.getElementById('ws6_sec' + i), false);
-          markField(document.getElementById('ws6_com' + i), false);
-        }
+        ['ws6_sec','ws6_com','ws6_typ','ws6_tln','ws6_foc'].forEach(f => markField(document.getElementById(f+i), mark && !g(f+i)));
+        if (ok || !mark) ['ws6_sec','ws6_com','ws6_typ','ws6_tln','ws6_foc'].forEach(f => markField(document.getElementById(f+i), false));
       }
       document.getElementById('ws6-err').classList.toggle('show', !ok);
       updateProgStep(6, ok);
@@ -1060,11 +1024,11 @@
         list.innerHTML = '';
         const msgs = [
           [ws1ok, 'Workshop 1 — Fill in at least one hiring sector row and one hard-to-fill occupation'],
-          [ws2ok, 'Workshop 2 — Fill in at least one row with Occupation, Demand Level, and Supply Level'],
-          [ws3ok, 'Workshop 3 — Fill in at least one row with Occupation and a Skills Gap'],
-          [ws4ok, 'Workshop 4 — Fill in at least one row with Skill and Related Occupation'],
-          [ws5ok, 'Workshop 5 — Fill in at least one row with Priority Skill and Proposed Training Program'],
-          [ws6ok, 'Workshop 6 — Fill in at least one row with Sector/Agency and Commitment'],
+          [ws2ok, 'Workshop 2 — Fill in at least one complete row (all 5 columns required)'],
+          [ws3ok, 'Workshop 3 — Fill in at least one complete row (all 5 columns required)'],
+          [ws4ok, 'Workshop 4 — Fill in at least one complete row (all 5 columns required)'],
+          [ws5ok, 'Workshop 5 — Fill in at least one complete row (all 5 columns required)'],
+          [ws6ok, 'Workshop 6 — Fill in at least one complete row (all 5 columns required)'],
         ];
         msgs.forEach(([ok, msg]) => {
           if (!ok) {
